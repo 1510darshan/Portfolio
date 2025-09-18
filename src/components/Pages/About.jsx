@@ -1,6 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaGithub, FaLinkedin, FaTwitter, FaCodepen, FaDownload } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaDownload } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 
 const About = () => {
@@ -49,7 +49,7 @@ const About = () => {
       <ContentWrapper>
         <AboutMeSection>
           <ProfileImageContainer>
-            <ProfileImage src="/api/placeholder/400/400" alt="Profile" />
+            <ProfileImage src="/assets/image.png" alt="Darshan Walhe Profile" />
             <ProfileImageBorder />
             <ProfileGlow />
           </ProfileImageContainer>
@@ -615,10 +615,26 @@ const EducationSection = styled.div`
 const Timeline = styled.div`
   position: relative;
   max-width: 100%;
-  margin: 2rem auto 0;
+  margin: 1.5rem auto 0;
   
   @media (min-width: 640px) {
+    margin: 2rem auto 0;
+  }
+  
+  @media (min-width: 768px) {
     margin: 3rem auto 0;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #3b82f6, rgba(71, 85, 105, 0.3));
+      transform: translateX(-50%);
+      z-index: 1;
+    }
   }
 `;
 
@@ -627,11 +643,17 @@ const TimelineItem = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  
+  @media (min-width: 640px) {
+    margin-bottom: 2.5rem;
+  }
   
   @media (min-width: 768px) {
     flex-direction: ${props => props.align === 'left' ? 'row' : 'row-reverse'};
     margin-bottom: 3rem;
+    justify-content: ${props => props.align === 'left' ? 'flex-start' : 'flex-end'};
   }
 `;
 
@@ -640,18 +662,26 @@ const TimelineContent = styled.div`
   background: rgba(30, 41, 59, 0.7);
   border: 1px solid rgba(71, 85, 105, 0.3);
   border-radius: 12px;
-  padding: 1.25rem;
-  max-width: calc(100% - 3rem);
+  padding: 1rem;
+  max-width: calc(100% - 2.5rem);
   animation: ${slideIn} 0.5s ease-out forwards;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  margin-left: 0.5rem;
+  
+  @media (min-width: 480px) {
+    padding: 1.25rem;
+    max-width: calc(100% - 3rem);
+  }
   
   @media (min-width: 640px) {
     padding: 1.5rem;
   }
   
   @media (min-width: 768px) {
-    max-width: calc(50% - 2rem);
+    max-width: calc(50% - 1.5rem);
+    margin-left: ${props => props.align === 'left' ? '0.5rem' : '0'};
+    margin-right: ${props => props.align === 'right' ? '0.5rem' : '0'};
   }
   
   &:hover {
@@ -663,23 +693,35 @@ const TimelineContent = styled.div`
 `;
 
 const TimelineDot = styled.div`
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: linear-gradient(90deg, #3b82f6, #a855f7);
-  margin: 0 1rem;
+  margin: 0 0.75rem 0 0;
   position: relative;
   z-index: 2;
   flex-shrink: 0;
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  
+  @media (min-width: 480px) {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.75rem;
+  }
   
   @media (min-width: 640px) {
     width: 20px;
     height: 20px;
+    margin-top: 1rem;
   }
   
   @media (min-width: 768px) {
-    margin-top: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    top: 1rem;
   }
   
   &::before {
@@ -697,16 +739,27 @@ const TimelineDot = styled.div`
 
 const TimelineLine = styled.div`
   position: absolute;
-  left: 9px;
-  top: 28px;
+  left: 8px;
+  top: 24px;
   bottom: -24px;
   width: 2px;
   background: linear-gradient(to bottom, #3b82f6, rgba(71, 85, 105, 0.3));
   z-index: 1;
   
+  @media (min-width: 480px) {
+    left: 9px;
+    top: 28px;
+  }
+  
+  @media (min-width: 640px) {
+    left: 10px;
+    top: 32px;
+  }
+  
   @media (min-width: 768px) {
     left: 50%;
     transform: translateX(-50%);
+    top: 32px;
   }
 `;
 

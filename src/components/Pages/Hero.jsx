@@ -4,6 +4,16 @@ import { FaCode, FaArrowDown } from 'react-icons/fa';
 import scrollToSection from './Scroll';
 
 const Hero = () => {
+  const downloadResume = () => {
+    // Create a link element and trigger download
+    const link = document.createElement('a');
+    link.href = '/assets/Darshan_Walhe_Resume.pdf'; // You'll need to add this file to public/assets
+    link.download = 'Darshan_Walhe_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <HeroContainer id="home">
       <BackgroundBlob1 />
@@ -39,7 +49,7 @@ const Hero = () => {
           
           <ButtonGroup>
             <PrimaryButton onClick={() => scrollToSection("projects")}>View My Projects</PrimaryButton>
-            <SecondaryButton>Download Resume</SecondaryButton>
+            <SecondaryButton onClick={downloadResume}>Download Resume</SecondaryButton>
           </ButtonGroup>
         </HeadingContainer>
 
@@ -83,11 +93,6 @@ const scroll = keyframes`
   100% { transform: translateY(0); opacity: 1; }
 `;
 
-const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-`;
-
 const rotate = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -116,29 +121,40 @@ const HeroContent = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 2rem;
   z-index: 2;
+  
+  @media (min-width: 768px) {
+    gap: 3rem;
+  }
   
   @media (min-width: 1024px) {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: 4rem;
   }
 `;
 
 const HeadingContainer = styled.div`
   flex: 1;
   max-width: 600px;
+  text-align: center;
+  
+  @media (min-width: 1024px) {
+    text-align: left;
+  }
 `;
 
 const PreTitle = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   margin-bottom: 1.5rem;
   color: #a855f7;
   background: rgba(168, 85, 247, 0.1);
@@ -146,6 +162,15 @@ const PreTitle = styled.div`
   padding: 0.5rem 1rem;
   border: 1px solid rgba(168, 85, 247, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+  
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -171,13 +196,21 @@ const IconBackground = styled.div`
 `;
 
 const MainTitle = styled.h1`
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1.5rem;
   color: #f1f5f9;
   
+  @media (min-width: 480px) {
+    font-size: 2.5rem;
+  }
+  
   @media (min-width: 768px) {
+    font-size: 3rem;
+  }
+  
+  @media (min-width: 1024px) {
     font-size: 3.5rem;
   }
 `;
@@ -203,11 +236,15 @@ const GradientText = styled.span`
 `;
 
 const SubTitle = styled.p`
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.8;
   color: #94a3b8; /* Subtle gray matching speciality section */
   margin-bottom: 1.5rem;
   max-width: 500px;
+  
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const SkillsList = styled.div`
@@ -215,6 +252,11 @@ const SkillsList = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 2rem;
+  justify-content: center;
+  
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+  }
 `;
 
 const SkillTag = styled.span`
@@ -238,6 +280,11 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  justify-content: center;
+  
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+  }
 `;
 
 const PrimaryButton = styled.button`
@@ -302,50 +349,73 @@ const SecondaryButton = styled.button`
 const HeroImageContainer = styled.div`
   flex: 1;
   display: flex;
-  
   justify-content: center;
   align-items: center;
   position: relative;
-/*   
-  @media (max-width: 1023px) {
-    margin-top: 2rem;
-  } */
+  margin-top: 2rem;
+  
+  @media (min-width: 1024px) {
+    margin-top: 0;
+  }
 `;
 
 const ProfileImageWrapper = styled.div`
   position: relative;
   z-index: 5;
-  width: 500px;
-  height: 380px;
+  width: 280px;
+  height: 280px;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  border: 4px solid rgba(59, 130, 246, 0.3);
+  border: 3px solid rgba(59, 130, 246, 0.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   /* animation: ${float} 6s ease-in-out infinite; */
     
     &::before {
       content: '';
       position: absolute;
-      top: -10px;
-      left: -10px;
-      right: -10px;
-      bottom: -10px;
+      top: -8px;
+      left: -8px;
+      right: -8px;
+      bottom: -8px;
       border-radius: 20px;
       border: 2px dashed rgba(168, 85, 247, 0.5);
       animation: ${rotate} 20s linear infinite;
       z-index: -1;
     }
   
+  @media (min-width: 480px) {
+    width: 320px;
+    height: 320px;
+    border: 4px solid rgba(59, 130, 246, 0.3);
+    
+    &::before {
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+    }
+  }
+  
   @media (min-width: 768px) {
+    width: 400px;
+    height: 400px;
+  }
+  
+  @media (min-width: 1024px) {
+    width: 450px;
+    height: 450px;
+  }
+  
+  @media (min-width: 1200px) {
     width: 500px;
     height: 500px;
   }
 `;
 
 const ProfileImage = styled.img`
-  width: 500px;
-  height: 500px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   transition: all 0.5s ease;
   filter: contrast(1.05) brightness(1.05);

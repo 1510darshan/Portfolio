@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Menu, X, Code, ChevronDown } from 'lucide-react';
+import { Menu, X, Code } from 'lucide-react';
 import scrollToSection from '../Scroll';
 
 const Navbar = () => {
@@ -36,6 +36,25 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleDiscussProjects = () => {
+    // Close mobile menu if open
+    setIsMenuOpen(false);
+    
+    // Scroll to contact section
+    scrollToSection('contact');
+    
+    // Pre-fill the contact form with project discussion context
+    setTimeout(() => {
+      const formUpdateEvent = new CustomEvent('updateContactForm', {
+        detail: {
+          subject: 'Project Discussion',
+          message: 'Hi Darshan, I\'d like to discuss a potential project with you. '
+        }
+      });
+      window.dispatchEvent(formUpdateEvent);
+    }, 500); // Small delay to ensure smooth scrolling and form is ready
   };
 
 
@@ -79,7 +98,7 @@ const Navbar = () => {
           <IconWrapper>
             <Code size={16} />
           </IconWrapper>
-          <GradientButton>
+          <GradientButton onClick={handleDiscussProjects}>
             Discuss Projects
             <ButtonGlow />
           </GradientButton>
@@ -119,7 +138,7 @@ const Navbar = () => {
               Contact
             </MobileNavLink>
           </MobileNavItem>
-          <MobileGradientButton>
+          <MobileGradientButton onClick={handleDiscussProjects}>
             <Code size={16} style={{ marginRight: '8px' }} />
             Discuss Projects
           </MobileGradientButton>
@@ -136,17 +155,6 @@ const pulse = keyframes`
   0% { opacity: 0.6; transform: scale(1); }
   50% { opacity: 0.9; transform: scale(1.05); }
   100% { opacity: 0.6; transform: scale(1); }
-`;
-
-const float = keyframes`
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-`;
-
-const shine = keyframes`
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
 `;
 
 // Styled Components
@@ -236,17 +244,6 @@ const LogoText = styled.span`
   
   @media (min-width: 640px) {
     font-size: 1.5rem;
-  }
-`;
-
-const LogoTagline = styled.span`
-  color: #94a3b8;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: none;
-  
-  @media (min-width: 640px) {
-    display: block;
   }
 `;
 

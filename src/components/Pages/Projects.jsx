@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaGithub, FaExternalLinkAlt, FaReact, FaNodeJs, FaDatabase, FaJava, FaPython } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt, FaReact, FaNodeJs } from 'react-icons/fa';
 import { SiMongodb, SiExpress } from 'react-icons/si';
 
 
@@ -166,17 +166,6 @@ const float = keyframes`
   0% { transform: translate(0, 0); }
   50% { transform: translate(10px, -10px); }
   100% { transform: translate(0, 0); }
-`;
-
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.05); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 0.6; }
-`;
-
-const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
 `;
 
 // Styled Components

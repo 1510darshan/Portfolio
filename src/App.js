@@ -5,6 +5,7 @@ import Hero from './components/Pages/Hero';
 import Speciality from './components/Pages/Speciality';
 import Projects from './components/Pages/Projects';
 import About from './components/Pages/About';
+import Contact from './components/Pages/Contact';
 
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
       <Speciality />
       <Projects />
       <About />
+      <Contact />
     </div>
     
   );
