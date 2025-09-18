@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaCode, FaArrowDown } from 'react-icons/fa';
+import scrollToSection from './Scroll';
 
 const Hero = () => {
   return (
@@ -27,22 +28,24 @@ const Hero = () => {
             clean architecture, high performance, and a creative edge.
           </SubTitle>
           
-          {/* <SkillsList>
+          <SkillsList>
             <SkillTag>React</SkillTag>
             <SkillTag>JavaScript</SkillTag>
             <SkillTag>Node.js</SkillTag>
             <SkillTag>MongoDB</SkillTag>
-          </SkillsList> */}
+            <SkillTag>SQL</SkillTag>
+            <SkillTag>Java</SkillTag>
+          </SkillsList>
           
           <ButtonGroup>
-            <PrimaryButton>View My Projects</PrimaryButton>
+            <PrimaryButton onClick={() => scrollToSection("projects")}>View My Projects</PrimaryButton>
             <SecondaryButton>Download Resume</SecondaryButton>
           </ButtonGroup>
         </HeadingContainer>
 
         <HeroImageContainer data-aos="fade-left">
           <ProfileImageWrapper>
-            <ProfileImage src="/assets/logo2.jpeg" alt="Darshan Walhe" />
+            <ProfileImage src="/assets/image.png" alt="Darshan Walhe" />
             <GlowEffect />
           </ProfileImageWrapper>
         </HeroImageContainer>
@@ -299,49 +302,50 @@ const SecondaryButton = styled.button`
 const HeroImageContainer = styled.div`
   flex: 1;
   display: flex;
+  
   justify-content: center;
   align-items: center;
   position: relative;
-  
+/*   
   @media (max-width: 1023px) {
     margin-top: 2rem;
-  }
+  } */
 `;
 
 const ProfileImageWrapper = styled.div`
   position: relative;
   z-index: 5;
-  width: 280px;
-  height: 280px;
+  width: 500px;
+  height: 380px;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
   border: 4px solid rgba(59, 130, 246, 0.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: ${float} 6s ease-in-out infinite;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    border-radius: 20px;
-    border: 2px dashed rgba(168, 85, 247, 0.5);
-    animation: ${rotate} 20s linear infinite;
-    z-index: -1;
-  }
+  /* animation: ${float} 6s ease-in-out infinite; */
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 20px;
+      border: 2px dashed rgba(168, 85, 247, 0.5);
+      animation: ${rotate} 20s linear infinite;
+      z-index: -1;
+    }
   
   @media (min-width: 768px) {
-    width: 320px;
-    height: 320px;
+    width: 500px;
+    height: 500px;
   }
 `;
 
 const ProfileImage = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 500px;
+  height: 500px;
   object-fit: cover;
   transition: all 0.5s ease;
   filter: contrast(1.05) brightness(1.05);

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaGithub, FaExternalLinkAlt, FaReact, FaNodeJs, FaDatabase, FaJava, FaPython } from 'react-icons/fa';
 import { SiMongodb, SiExpress } from 'react-icons/si';
-import { DiMysql } from "react-icons/di";
+
+
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -11,7 +12,7 @@ const Projects = () => {
     {
       title: "IRCTC Railway Booking System",
       description: "A full-stack web application for railway ticket booking, built with React, Node.js, Express, and Microsoft SQL Server.",
-      image: "https://private-user-images.githubusercontent.com/66858036/444770365-0b31fea1-57d8-4569-80f9-cf24bb455514.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDc2NzgxNzAsIm5iZiI6MTc0NzY3Nzg3MCwicGF0aCI6Ii82Njg1ODAzNi80NDQ3NzAzNjUtMGIzMWZlYTEtNTdkOC00NTY5LTgwZjktY2YyNGJiNDU1NTE0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA1MTklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTE5VDE4MDQzMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWNkYjNkNTU1MGVlNDllOGQ0NDczZGQyMzMwMjQxODYwZDdiOWUyYTRkYTc0Yjc2ZTEyYTAxMWYyMmZmMDg4NTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.WrSJ-fPy_Sa7CFO9UgTXs_XZPHDPoK3samgkDm60VHw",
+      image: "https://private-user-images.githubusercontent.com/66858036/444770365-0b31fea1-57d8-4569-80f9-cf24bb455514.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTgyMTg0OTIsIm5iZiI6MTc1ODIxODE5MiwicGF0aCI6Ii82Njg1ODAzNi80NDQ3NzAzNjUtMGIzMWZlYTEtNTdkOC00NTY5LTgwZjktY2YyNGJiNDU1NTE0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA5MTglMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwOTE4VDE3NTYzMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0NWRmZGFmZTA3NzZjZGI1ZDk4MWI3ZDIzZTgwZjcxOGU3ZWI1OWNmNDU4YjI2MGE0ZmJjNTQ3OWJlNDZjNzQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.bZuuMpGsoWxBiGefJ3Rwfk37GN9vZa3lvv0K5ZtVZw4",
       category: "fullstack",
       tags: ["React", "CSS", "MSSQL","Node Js", "Express"],
       githubLink: "https://github.com/1510darshan/IRCTC-Railway-Booking",

@@ -33,7 +33,7 @@ const Speciality = () => {
       icon: <FaAndroid size={36} />,
       title: "Android Development",
       description: "Building smart Android solutions with clean code, efficient automation, and strong backend logic.",
-      skills: ["Java", "OOP", "XML", "SQLite", "Firebase"]
+      skills: ["Java", "OOP", "XML", "SQLite"]
     },
 
 

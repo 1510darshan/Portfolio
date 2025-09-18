@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Menu, X, Code, ChevronDown } from 'lucide-react';
+import scrollToSection from '../Scroll';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,13 +38,7 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
+
 
   return (
     <Header isScrolled={isScrolled}>
@@ -51,7 +46,7 @@ const Navbar = () => {
         {/* Logo */}
         <LogoContainer>
           <LogoCircle>
-            <LogoImage src="/assets/7-R.png" alt="Logo" />
+            <LogoImage src="/assets/icon.jpg" alt="Logo" />
             <LogoGlow />
           </LogoCircle>
           <LogoContent>
@@ -186,8 +181,8 @@ const LogoContainer = styled.div`
 `;
 
 const LogoCircle = styled.div`
-  height: 48px;
-  width: 48px;
+  height: 58px;
+  width: 58px;
   border-radius: 12px;
   background: rgba(30, 41, 59, 0.8);
   display: flex;
