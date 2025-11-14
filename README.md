@@ -1,41 +1,41 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Personal Portfolio
 
-## Available Scripts
+## ✅ **Functionality Added:**
 
-In the project directory, you can run:
+### **1. Desktop & Mobile Button Functionality:**
+- Both "Discuss Projects" buttons in the navbar now have onClick handlers
+- Automatically scrolls to the Contact section when clicked
+- Closes mobile menu if it's open
 
-### `npm start`
+### **2. Smart Form Pre-filling:**
+- Pre-fills the contact form with project-related content:
+  - **Subject:** "Project Discussion"
+  - **Message:** "Hi Darshan, I'd like to discuss a potential project with you. "
+- Uses custom events for clean component communication
+- Only pre-fills if fields are empty (doesn't overwrite user input)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### **3. Visual Feedback:**
+- Form highlights with blue glow when pre-filled
+- Subtle border and background change for 2 seconds
+- Smooth transitions for better user experience
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### **4. Technical Implementation:**
+- **Navbar:** Added `handleDiscussProjects()` function
+- **Contact:** Added `useEffect` to listen for form updates
+- **Custom Events:** Used `updateContactForm` event for component communication
+- **State Management:** Added `isFormHighlighted` state for visual feedback
 
-### `npm test`
+## 🎯 **User Experience:**
+1. User clicks "Discuss Projects" button
+2. Page smoothly scrolls to Contact section
+3. Form briefly highlights with blue glow
+4. Subject and message fields are pre-filled with project discussion context
+5. User can immediately continue typing or modify the pre-filled content
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
+## 🔧 **Code Quality:**
+- No compilation errors
+- Clean component separation
+- Reusable event system
+- Responsive design maintained
+- Theme consistency preserved
