@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Menu, X, Code } from 'lucide-react';
+import { Menu, X, Code, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import scrollToSection from '../Scroll';
 import { profileAPI } from '../../../services/api';
 
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [profile, setProfile] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProfile();
@@ -74,6 +76,11 @@ const Navbar = () => {
     }, 500); // Small delay to ensure smooth scrolling and form is ready
   };
 
+  const handleAdminClick = () => {
+    setIsMenuOpen(false);
+    navigate('/admin/login');
+  };
+
 
 
   return (
@@ -119,6 +126,10 @@ const Navbar = () => {
             Discuss Projects
             <ButtonGlow />
           </GradientButton>
+          
+          <AdminButton onClick={handleAdminClick} title="Admin Panel">
+            <Lock size={18} />
+          </AdminButton>
         </ActionButtonWrapper>
 
         {/* Mobile Menu Button */}
@@ -159,11 +170,39 @@ const Navbar = () => {
             <Code size={16} style={{ marginRight: '8px' }} />
             Discuss Projects
           </MobileGradientButton>
+          <MobileGradientButton onClick={handleAdminClick} style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(168, 85, 247, 0.3)', color: '#a855f7' }}>
+            <Lock size={16} style={{ marginRight: '8px' }} />
+            Admin Panel
+          </MobileGradientButton>
         </MobileMenuContainer>
       </MobileMenu>
     </Header>
   );
 };
+
+const AdminButton = styled.button`
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin-left: 0.75rem;
+  
+  &:hover {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: #a855f7;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 859px) {
+    display: none;
+  }
+`;
 
 export default Navbar;
 
