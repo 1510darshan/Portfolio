@@ -80,9 +80,7 @@ const AdminLogin = () => {
           </SubmitButton>
         </Form>
 
-        <DefaultCredentials>
-          <small>Default credentials: admin@portfolio.com / admin123</small>
-        </DefaultCredentials>
+
       </LoginCard>
     </LoginContainer>
   );
