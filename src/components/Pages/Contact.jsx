@@ -131,7 +131,7 @@ const Contact = () => {
       
       // Then send email via EmailJS
       const serviceId = 'service_x3z1nzp';
-      const templateId = 'template_zx9ggto';
+      const templateId = 'template_3q4xr2j';
       
       const templateParams = {
         from_name: formData.name,
