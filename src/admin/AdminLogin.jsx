@@ -28,8 +28,10 @@ const AdminLogin = () => {
     try {
       const response = await authAPI.login(formData);
       if (response.data.success) {
-        localStorage.setItem('adminToken', response.data.token);
-        localStorage.setItem('adminEmail', response.data.admin.email);
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('adminToken', response.data.token);
+          localStorage.setItem('adminEmail', response.data.admin.email);
+        }
         navigate('/admin/dashboard');
       }
     } catch (err) {

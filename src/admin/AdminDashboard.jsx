@@ -47,7 +47,9 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('adminToken');
+    }
     navigate('/admin/login');
   };
 

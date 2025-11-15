@@ -2,7 +2,10 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('adminToken');
+  // Check if localStorage is available (not available during SSR/build)
+  const token = typeof window !== 'undefined' && window.localStorage 
+    ? localStorage.getItem('adminToken') 
+    : null;
   
   if (!token) {
     return <Navigate to="/admin/login" replace />;
