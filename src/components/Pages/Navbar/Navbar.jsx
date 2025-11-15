@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Menu, X, Code } from 'lucide-react';
 import scrollToSection from '../Scroll';
+import { profileAPI } from '../../../services/api';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await profileAPI.get();
+      if (response.data.data) {
+        setProfile(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   // Handle scrolling effect
   useEffect(() => {
@@ -60,36 +77,36 @@ const Navbar = () => {
 
 
   return (
-    <Header isScrolled={isScrolled}>
+    <Header $isScrolled={isScrolled}>
       <Container>
         {/* Logo */}
         <LogoContainer>
           <LogoCircle>
-            <LogoImage src="/assets/icon.jpg" alt="Logo" />
+            <LogoImage src={profile?.profileImage || '/assets/icon.jpg'} alt="Logo" />
             <LogoGlow />
           </LogoCircle>
           <LogoContent>
-            <LogoText>DevDarsh</LogoText>
+            <LogoText>{profile?.name?.split(' ')[0] ? `Dev${profile.name.split(' ')[0]}` : 'DevDarsh'}</LogoText>
             {/* <LogoTagline>Full Stack Developer</LogoTagline> */}
           </LogoContent>
         </LogoContainer>
 
         {/* Desktop Navigation */}
-        <Navigation>
-          <NavItem isActive={activeSection === 'home'}>
-            <NavLink onClick={() => scrollToSection('home')}>Home</NavLink>
+        <Navigation role="navigation" aria-label="Main navigation">
+          <NavItem $isActive={activeSection === 'home'}>
+            <NavLink onClick={() => scrollToSection('home')} aria-label="Navigate to home section" role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && scrollToSection('home')}>Home</NavLink>
           </NavItem>
-          <NavItem isActive={activeSection === 'specialities'}>
-            <NavLink onClick={() => scrollToSection('specialities')}>Specialities</NavLink>
+          <NavItem $isActive={activeSection === 'specialities'}>
+            <NavLink onClick={() => scrollToSection('specialities')} aria-label="Navigate to specialities section" role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && scrollToSection('specialities')}>Specialities</NavLink>
           </NavItem>
-          <NavItem isActive={activeSection === 'projects'}>
-            <NavLink onClick={() => scrollToSection('projects')}>Projects</NavLink>
+          <NavItem $isActive={activeSection === 'projects'}>
+            <NavLink onClick={() => scrollToSection('projects')} aria-label="Navigate to projects section" role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && scrollToSection('projects')}>Projects</NavLink>
           </NavItem>
-          <NavItem isActive={activeSection === 'about'}>
-            <NavLink onClick={() => scrollToSection('about')}>About</NavLink>
+          <NavItem $isActive={activeSection === 'about'}>
+            <NavLink onClick={() => scrollToSection('about')} aria-label="Navigate to about section" role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && scrollToSection('about')}>About</NavLink>
           </NavItem>
-          <NavItem isActive={activeSection === 'contact'}>
-            <NavLink onClick={() => scrollToSection('contact')}>Contact</NavLink>
+          <NavItem $isActive={activeSection === 'contact'}>
+            <NavLink onClick={() => scrollToSection('contact')} aria-label="Navigate to contact section" role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && scrollToSection('contact')}>Contact</NavLink>
           </NavItem>
         </Navigation>
 
@@ -105,7 +122,7 @@ const Navbar = () => {
         </ActionButtonWrapper>
 
         {/* Mobile Menu Button */}
-        <MobileMenuButton onClick={toggleMenu} isOpen={isMenuOpen}>
+        <MobileMenuButton onClick={toggleMenu} isOpen={isMenuOpen} aria-label={isMenuOpen ? "Close menu" : "Open menu"} aria-expanded={isMenuOpen}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </MobileMenuButton>
       </Container>
@@ -282,9 +299,15 @@ const NavLink = styled.div`
   transition: color 0.3s ease;
   padding: 0.25rem 0;
   cursor: pointer;
+  outline: none;
   
   &:hover {
     color: #a855f7;
+  }
+  
+  &:focus {
+    color: #a855f7;
+    text-decoration: underline;
   }
 `;
 

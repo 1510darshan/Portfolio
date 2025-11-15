@@ -1,0 +1,8 @@
+# Build command for Render
+build: npm install && cd backend && npm install && cd .. && npm run build
+
+# Start command for Render (backend only)
+start: cd backend && npm start
+
+# Health check endpoint
+healthCheckPath: /api/health

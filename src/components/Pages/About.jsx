@@ -1,40 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaGithub, FaLinkedin, FaTwitter, FaDownload } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaDownload, FaGlobe } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
+import { skillAPI, educationAPI, profileAPI } from '../../services/api';
 
 const About = () => {
-  // Skills data for the skill bars
-  const skills = [
+  const [skills, setSkills] = useState([
     { name: "Frontend Development", level: 92 },
     { name: "Backend Development", level: 85 },
     { name: "Java Programming", level: 90 },
     { name: "Python", level: 80 },
     { name: "Database Management", level: 75 },
     { name: "UI/UX Design", level: 70 },
-  ];
-
-  // Education timeline data
-  const education = [
+  ]);
+  
+  const [education, setEducation] = useState([
     {
       degree: "Bachelor of Computer Science",
       institution: "SVKM's NMIMS Shirpur",
       duration: "2023 - 2027",
       description: "Currently pursuing B.Tech in Computer Science, having completed the second year with a strong focus on software engineering, web development, and database systems. Actively working on real-world projects and building hands-on experience in full-stack development and cybersecurity."
-    },
-    {
-      degree: "Full Stack Web Development",
-      institution: "Tech Academy Bootcamp",
-      duration: "2022",
-      description: "Intensive program covering modern JavaScript frameworks, API development, and deployment strategies."
-    },
-    {
-      degree: "Mobile App Development Certificate",
-      institution: "Online Learning Institute",
-      duration: "2023",
-      description: "Specialized training in cross-platform application development and native mobile technologies."
     }
-  ];
+  ]);
+
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [skillsRes, eduRes, profileRes] = await Promise.all([
+        skillAPI.getAll(),
+        educationAPI.getAll(),
+        profileAPI.get()
+      ]);
+      
+      if (skillsRes.data.data.length > 0) setSkills(skillsRes.data.data);
+      if (eduRes.data.data.length > 0) setEducation(eduRes.data.data);
+      if (profileRes.data.data) setProfile(profileRes.data.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // Keep fallback data if API fails
+    }
+  };
+  
+  const downloadResume = () => {
+    const resumeUrl = profile?.resumeUrl || '/assets/Darshan_Walhe_Resume.pdf';
+    const link = document.createElement('a');
+    link.href = resumeUrl;
+    link.download = resumeUrl.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <AboutContainer id="about">
@@ -49,62 +69,60 @@ const About = () => {
       <ContentWrapper>
         <AboutMeSection>
           <ProfileImageContainer>
-            <ProfileImage src="/assets/image.png" alt="Darshan Walhe Profile" />
+            <ProfileImage 
+              src={profile?.profileImage || '/assets/image.png'} 
+              alt={`${profile?.name || 'Darshan Walhe'} - ${profile?.title || 'Full Stack Developer'} Profile`} 
+              loading="lazy" 
+            />
             <ProfileImageBorder />
             <ProfileGlow />
           </ProfileImageContainer>
           
           <AboutContent>
-            <AboutTitle>Full Stack Developer & Problem Solver</AboutTitle>
+            <AboutTitle>{profile?.title || 'Full Stack Developer & Problem Solver'}</AboutTitle>
             <AboutText>
-              I'm Darsh, a passionate developer with 4+ years of experience creating elegant, 
-              efficient solutions for the web. My journey in software development 
-              began with a curiosity about how things work, which evolved into a 
-              career built on continuous learning and problem-solving.
+              {profile?.bio || "I'm Darsh, a passionate developer with 4+ years of experience creating elegant, efficient solutions for the web. My journey in software development began with a curiosity about how things work, which evolved into a career built on continuous learning and problem-solving."}
             </AboutText>
-            <AboutText>
-              I specialize in building robust full-stack applications, with expertise 
-              in modern JavaScript frameworks, Java, Python, and database technologies. 
-              My approach combines technical excellence with creative thinking to deliver 
-              solutions that not only meet requirements but exceed expectations.
-            </AboutText>
+            {profile?.location && (
+              <AboutText>
+                📍 Based in {profile.location}
+              </AboutText>
+            )}
             
             <StatsContainer>
-              {/* <StatItem>
-                <StatNumber>4+</StatNumber>
-                <StatLabel>Years Experience</StatLabel>
-              </StatItem> */}
-              <StatDivider className="desktop-only" />
               <StatItem>
                 <StatNumber>2</StatNumber>
                 <StatLabel>Projects</StatLabel>
               </StatItem>
-              <StatDivider className="desktop-only" />
-              {/* <StatItem>
-                <StatNumber>30+</StatNumber>
-                <StatLabel>Clients</StatLabel>
-              </StatItem> */}
             </StatsContainer>
             
             <SocialLinks>
-              <SocialLink href="https://github.com/1510darshan" target="_blank" rel="noopener noreferrer">
-                <FaGithub />
-              </SocialLink>
-              <SocialLink href="https://in.linkedin.com/in/darshan-walhe-475b60255" target="_blank" rel="noopener noreferrer">
-                <FaLinkedin />
-              </SocialLink>
-              <SocialLink href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-                <FaTwitter />
-              </SocialLink>
-              {/* <SocialLink href="https://codepen.io" target="_blank" rel="noopener noreferrer">
-                <FaCodepen />
-              </SocialLink> */}
-              <SocialLink href="mailto:Darshanwalhe1510@gmail.com">
+              {profile?.github && (
+                <SocialLink href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="Visit my GitHub profile">
+                  <FaGithub />
+                </SocialLink>
+              )}
+              {profile?.linkedin && (
+                <SocialLink href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Visit my LinkedIn profile">
+                  <FaLinkedin />
+                </SocialLink>
+              )}
+              {profile?.twitter && (
+                <SocialLink href={profile.twitter} target="_blank" rel="noopener noreferrer" aria-label="Visit my Twitter profile">
+                  <FaTwitter />
+                </SocialLink>
+              )}
+              {profile?.website && (
+                <SocialLink href={profile.website} target="_blank" rel="noopener noreferrer" aria-label="Visit my website">
+                  <FaGlobe />
+                </SocialLink>
+              )}
+              <SocialLink href={`mailto:${profile?.email || 'Darshanwalhe1510@gmail.com'}`} aria-label="Send me an email">
                 <MdEmail />
               </SocialLink>
             </SocialLinks>
             
-            <DownloadButton>
+            <DownloadButton onClick={downloadResume} aria-label="Download my resume">
               <FaDownload /> Download Resume
             </DownloadButton>
           </AboutContent>
@@ -121,7 +139,7 @@ const About = () => {
                   <SkillPercentage>{skill.level}%</SkillPercentage>
                 </SkillInfo>
                 <SkillBarOuter>
-                  <SkillBarInner width={skill.level} delay={index * 0.1} />
+                  <SkillBarInner $width={skill.level} $delay={index * 0.1} />
                 </SkillBarOuter>
               </SkillBar>
             ))}
@@ -133,7 +151,7 @@ const About = () => {
           
           <Timeline>
             {education.map((item, index) => (
-              <TimelineItem key={index} align={index % 2 === 0 ? 'left' : 'right'}>
+              <TimelineItem key={index} $align={index % 2 === 0 ? 'left' : 'right'}>
                 <TimelineContent>
                   <TimelineDuration>{item.duration}</TimelineDuration>
                   <TimelineDegree>{item.degree}</TimelineDegree>
@@ -596,11 +614,11 @@ const SkillBarOuter = styled.div`
 
 const SkillBarInner = styled.div`
   height: 100%;
-  width: ${props => props.width}%;
+  width: ${props => props.$width}%;
   background: linear-gradient(90deg, #3b82f6, #a855f7);
   border-radius: 4px;
   animation: ${fillBar} 1.5s ease-out forwards;
-  animation-delay: ${props => props.delay}s;
+  animation-delay: ${props => props.$delay}s;
 `;
 
 const EducationSection = styled.div`
@@ -651,9 +669,20 @@ const TimelineItem = styled.div`
   }
   
   @media (min-width: 768px) {
-    flex-direction: ${props => props.align === 'left' ? 'row' : 'row-reverse'};
     margin-bottom: 3rem;
-    justify-content: ${props => props.align === 'left' ? 'flex-start' : 'flex-end'};
+    justify-content: ${props => props.$align === 'left' ? 'flex-start' : 'flex-end'};
+    
+    ${props => props.$align === 'left' ? `
+      & > ${TimelineContent} {
+        margin-right: auto;
+        margin-left: 0;
+      }
+    ` : `
+      & > ${TimelineContent} {
+        margin-left: auto;
+        margin-right: 0;
+      }
+    `}
   }
 `;
 
@@ -668,6 +697,7 @@ const TimelineContent = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   margin-left: 0.5rem;
+  text-align: left;
   
   @media (min-width: 480px) {
     padding: 1.25rem;
@@ -679,9 +709,9 @@ const TimelineContent = styled.div`
   }
   
   @media (min-width: 768px) {
-    max-width: calc(50% - 1.5rem);
-    margin-left: ${props => props.align === 'left' ? '0.5rem' : '0'};
-    margin-right: ${props => props.align === 'right' ? '0.5rem' : '0'};
+    max-width: calc(50% - 2rem);
+    margin-left: 0;
+    margin-right: 0;
   }
   
   &:hover {

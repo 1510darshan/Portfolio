@@ -1,41 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaCode, FaArrowDown } from 'react-icons/fa';
+import { FaArrowDown } from 'react-icons/fa';
 import scrollToSection from './Scroll';
+import { profileAPI } from '../../services/api';
 
 const Hero = () => {
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await profileAPI.get();
+      if (response.data.data) {
+        setProfile(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
   const downloadResume = () => {
-    // Create a link element and trigger download
+    const resumeUrl = profile?.resumeUrl || '/assets/Darshan_Walhe_Resume.pdf';
     const link = document.createElement('a');
-    link.href = '/assets/Darshan_Walhe_Resume.pdf'; // You'll need to add this file to public/assets
-    link.download = 'Darshan_Walhe_Resume.pdf';
+    link.href = resumeUrl;
+    link.download = resumeUrl.split('/').pop();
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <HeroContainer id="home">
-      <BackgroundBlob1 />
-      <BackgroundBlob2 />
+    <HeroContainer id="home" role="banner" aria-label="Hero section">
+      <BackgroundBlob1 aria-hidden="true" />
+      <BackgroundBlob2 aria-hidden="true" />
       
       <HeroContent>
         <HeadingContainer data-aos="fade-right">
           <PreTitle>
             <IconWrapper>
-              <FaCode />
+              
               <IconBackground />
             </IconWrapper>
-            Aspiring Software and Web Development Enthusiast
+            {profile?.title || 'Aspiring Software and Web Development Enthusiast'}
           </PreTitle>
           
           <MainTitle>
-            Hi, I'm <GradientText>Darshan Walhe</GradientText>
+            Hi, I'm <GradientText>{profile?.name || 'Darshan Walhe'}</GradientText>
           </MainTitle>
           
           <SubTitle>
-            I'm a passionate Web Developer and Programmer, crafting seamless digital experiences through
-            clean architecture, high performance, and a creative edge.
+            {profile?.bio || "I'm a passionate Web Developer and Programmer, crafting seamless digital experiences through clean architecture, high performance, and a creative edge."}
           </SubTitle>
           
           <SkillsList>
@@ -48,20 +65,28 @@ const Hero = () => {
           </SkillsList>
           
           <ButtonGroup>
-            <PrimaryButton onClick={() => scrollToSection("projects")}>View My Projects</PrimaryButton>
-            <SecondaryButton onClick={downloadResume}>Download Resume</SecondaryButton>
+            <PrimaryButton onClick={() => scrollToSection("projects")} aria-label="View my projects">
+              View My Projects
+            </PrimaryButton>
+            <SecondaryButton onClick={downloadResume} aria-label="Download my resume">
+              Download Resume
+            </SecondaryButton>
           </ButtonGroup>
         </HeadingContainer>
 
         <HeroImageContainer data-aos="fade-left">
           <ProfileImageWrapper>
-            <ProfileImage src="/assets/image.png" alt="Darshan Walhe" />
+            <ProfileImage 
+              src={profile?.profileImage || '/assets/image.png'} 
+              alt={`${profile?.name || 'Darshan Walhe'} - ${profile?.title || 'Full Stack Developer'}`} 
+              loading="lazy" 
+            />
             <GlowEffect />
           </ProfileImageWrapper>
         </HeroImageContainer>
       </HeroContent>
 
-      <ScrollIndicator>
+      <ScrollIndicator aria-label="Scroll down to see more">
         <MouseIcon>
           <MouseWheel />
         </MouseIcon>
@@ -369,7 +394,6 @@ const ProfileImageWrapper = styled.div`
   overflow: hidden;
   border: 3px solid rgba(59, 130, 246, 0.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  /* animation: ${float} 6s ease-in-out infinite; */
     
     &::before {
       content: '';

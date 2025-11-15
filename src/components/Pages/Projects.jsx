@@ -1,88 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaGithub, FaExternalLinkAlt, FaReact, FaNodeJs } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt, FaReact, FaNodeJs, FaStar, FaCodeBranch } from 'react-icons/fa';
 import { SiMongodb, SiExpress } from 'react-icons/si';
+import { projectAPI } from '../../services/api';
+import { fetchGitHubProjects } from '../../services/githubApi';
 
 
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('all');
-  
-  const projects = [
-    {
-      title: "IRCTC Railway Booking System",
-      description: "A full-stack web application for railway ticket booking, built with React, Node.js, Express, and Microsoft SQL Server.",
-      image: "https://private-user-images.githubusercontent.com/66858036/444770365-0b31fea1-57d8-4569-80f9-cf24bb455514.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTgyMTg0OTIsIm5iZiI6MTc1ODIxODE5MiwicGF0aCI6Ii82Njg1ODAzNi80NDQ3NzAzNjUtMGIzMWZlYTEtNTdkOC00NTY5LTgwZjktY2YyNGJiNDU1NTE0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA5MTglMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwOTE4VDE3NTYzMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0NWRmZGFmZTA3NzZjZGI1ZDk4MWI3ZDIzZTgwZjcxOGU3ZWI1OWNmNDU4YjI2MGE0ZmJjNTQ3OWJlNDZjNzQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.bZuuMpGsoWxBiGefJ3Rwfk37GN9vZa3lvv0K5ZtVZw4",
-      category: "fullstack",
-      tags: ["React", "CSS", "MSSQL","Node Js", "Express"],
-      githubLink: "https://github.com/1510darshan/IRCTC-Railway-Booking",
-      // liveLink: "https://example.com",
-      icons: [<FaReact key="react" />, <FaNodeJs key="node" />, <SiExpress key="express" />]
-    },
-    {
-      title: "Authentication Rest Full API",
-      description: "A robust Node.js authentication system featuring email verification, password reset functionality, and secure session management using JWT tokens.",
-      image: "./image",
-      category: "backend",
-      tags: ["Node Js", "MongoDB", "Nodemailer","Express"],
-      githubLink: "https://github.com/1510darshan/Authentication",
-      // liveLink: "https://example.com",
-      icons: [<FaReact key="react" />, <FaNodeJs key="node" />, <SiMongodb key="mongodb" />, <SiExpress key="express" />]
-    },
-    // {
-    //   title: "Task Management API",
-    //   description: "RESTful API for task management with user authentication, task CRUD operations, and advanced filtering capabilities.",
-    //   image: "/api/placeholder/600/400",
-    //   category: "backend",
-    //   tags: ["Node.js", "Express", "MongoDB"],
-    //   githubLink: "https://github.com",
-    //   liveLink: "https://example.com",
-    //   icons: [<FaNodeJs key="node" />, <SiExpress key="express" />, <SiMongodb key="mongodb" />]
-    // },
-    // {
-    //   title: "Student Management System",
-    //   description: "Java-based application for managing student records, course enrollments, and grade tracking with a streamlined interface.",
-    //   image: "/api/placeholder/600/400",
-    //   category: "java",
-    //   tags: ["Java", "Swing", "MySQL"],
-    //   githubLink: "https://github.com",
-    //   liveLink: null,
-    //   icons: [<FaJava key="java" />, <FaDatabase key="database" />]
-    // },
-    // {
-    //   title: "Automated Data Analysis Tool",
-    //   description: "Python tool that automates the process of data cleaning, analysis, and visualization with customizable reporting.",
-    //   image: "/api/placeholder/600/400",
-    //   category: "python",
-    //   tags: ["Python", "Pandas", "Data Visualization"],
-    //   githubLink: "https://github.com",
-    //   liveLink: null,
-    //   icons: [<FaPython key="python" />]
-    // },
-    // {
-    //   title: "Weather Dashboard",
-    //   description: "Interactive weather dashboard displaying real-time weather data, forecasts, and historical weather patterns via API.",
-    //   image: "/api/placeholder/600/400",
-    //   category: "frontend",
-    //   tags: ["React", "API Integration", "Charts.js"],
-    //   githubLink: "https://github.com",
-    //   liveLink: "https://example.com",
-    //   icons: [<FaReact key="react" />]
-    // }
-  ];
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [useGitHub, setUseGitHub] = useState(false); // Toggle between DB and GitHub
+
+  useEffect(() => {
+    fetchProjects();
+  }, [useGitHub]);
+
+  const fetchProjects = async () => {
+    setLoading(true);
+    try {
+      if (useGitHub) {
+        // Fetch from GitHub
+        const githubProjects = await fetchGitHubProjects();
+        setProjects(githubProjects);
+      } else {
+        // Fetch from database
+        const response = await projectAPI.getAll();
+        setProjects(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      // Fallback to hardcoded data if API fails
+      setProjects([
+        {
+          title: "IRCTC Railway Booking System",
+          description: "A full-stack web application for railway ticket booking, built with React, Node.js, Express, and Microsoft SQL Server.",
+          image: "https://private-user-images.githubusercontent.com/66858036/444770365-0b31fea1-57d8-4569-80f9-cf24bb455514.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTgyMTg0OTIsIm5iZiI6MTc1ODIxODE5MiwicGF0aCI6Ii82Njg1ODAzNi80NDQ3NzAzNjUtMGIzMWZlYTEtNTdkOC00NTY5LTgwZjktY2YyNGJiNDU1NTE0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA5MTglMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwOTE4VDE3NTYzMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0NWRmZGFmZTA3NzZjZGI1ZDk4MWI3ZDIzZTgwZjcxOGU3ZWI1OWNmNDU4YjI2MGE0ZmJjNTQ3OWJlNDZjNzQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.bZuuMpGsoWxBiGefJ3Rwfk37GN9vZa3lvv0K5ZtVZw4",
+          category: "fullstack",
+          tags: ["React", "CSS", "MSSQL","Node Js", "Express"],
+          githubLink: "https://github.com/1510darshan/IRCTC-Railway-Booking",
+          icons: [<FaReact key="react" />, <FaNodeJs key="node" />, <SiExpress key="express" />]
+        },
+        {
+          title: "Authentication Rest Full API",
+          description: "A robust Node.js authentication system featuring email verification, password reset functionality, and secure session management using JWT tokens.",
+          image: "./image",
+          category: "backend",
+          tags: ["Node Js", "MongoDB", "Nodemailer","Express"],
+          githubLink: "https://github.com/1510darshan/Authentication",
+          icons: [<FaReact key="react" />, <FaNodeJs key="node" />, <SiMongodb key="mongodb" />, <SiExpress key="express" />]
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filters = [
     { id: 'all', label: 'All Projects' },
+    { id: 'fullstack', label: 'Full Stack' },
     { id: 'frontend', label: 'Frontend' },
     { id: 'backend', label: 'Backend' },
-    { id: 'fullstack', label: 'Full Stack' },
+    { id: 'mobile', label: 'Mobile App' },
+    { id: 'devops', label: 'DevOps' },
+    { id: 'ai-ml', label: 'AI/ML' },
+    { id: 'uiux', label: 'UI/UX' },
+    { id: 'database', label: 'Database' },
+    { id: 'security', label: 'Security' },
     { id: 'java', label: 'Java' },
-    { id: 'python', label: 'Python' }
+    { id: 'python', label: 'Python' },
+    { id: 'other', label: 'Other' }
   ];
+
+  // Get unique categories from projects
+  const availableCategories = ['all', ...new Set(projects.flatMap(p => p.categories || [p.category]))];
+  
+  // Filter to show only categories that have projects
+  const visibleFilters = filters.filter(filter => 
+    filter.id === 'all' || availableCategories.includes(filter.id)
+  );
 
   const filteredProjects = activeFilter === 'all' 
     ? projects 
-    : projects.filter(project => project.category === activeFilter);
+    : projects.filter(project => {
+        const projectCategories = project.categories || [project.category];
+        return projectCategories.includes(activeFilter);
+      });
 
   return (
     <ProjectsContainer id="projects">
@@ -99,10 +103,10 @@ const Projects = () => {
       </ParaPhrase>
       
       <FiltersContainer>
-        {filters.map(filter => (
+        {visibleFilters.map(filter => (
           <FilterButton 
             key={filter.id}
-            isActive={activeFilter === filter.id}
+            $isActive={activeFilter === filter.id}
             onClick={() => setActiveFilter(filter.id)}
           >
             {filter.label}
@@ -114,7 +118,7 @@ const Projects = () => {
         {filteredProjects.map((project, index) => (
           <ProjectCard key={index} data-aos="fade-up" data-aos-delay={index * 100}>
             <ProjectImageContainer>
-              <ProjectImage src={project.image} alt={project.title} />
+              <ProjectImage src={project.image} alt={project.title} loading="lazy" />
               <ProjectOverlay>
                 <OverlayContent>
                   <TagsContainer>
@@ -122,11 +126,13 @@ const Projects = () => {
                       <ProjectTag key={tagIndex}>{tag}</ProjectTag>
                     ))}
                   </TagsContainer>
-                  <IconsRow>
-                    {project.icons.map((icon, iconIndex) => (
-                      <TechIcon key={iconIndex}>{icon}</TechIcon>
-                    ))}
-                  </IconsRow>
+                  {project.icons && project.icons.length > 0 && (
+                    <IconsRow>
+                      {project.icons.map((icon, iconIndex) => (
+                        <TechIcon key={iconIndex}>{icon}</TechIcon>
+                      ))}
+                    </IconsRow>
+                  )}
                 </OverlayContent>
               </ProjectOverlay>
             </ProjectImageContainer>
@@ -151,7 +157,7 @@ const Projects = () => {
       </ProjectGrid>
       
       <ViewMoreContainer>
-        <ViewMoreButton>
+        <ViewMoreButton aria-label="View all projects on GitHub">
           View All Projects
         </ViewMoreButton>
       </ViewMoreContainer>
@@ -244,11 +250,11 @@ const FiltersContainer = styled.div`
 
 const FilterButton = styled.button`
   padding: 0.5rem 1.25rem;
-  background: ${props => props.isActive 
+  background: ${props => props.$isActive 
     ? 'linear-gradient(90deg, #3b82f6, #a855f7)'
     : 'rgba(30, 41, 59, 0.7)'};
-  color: ${props => props.isActive ? 'white' : '#cbd5e1'};
-  border: 1px solid ${props => props.isActive 
+  color: ${props => props.$isActive ? 'white' : '#cbd5e1'};
+  border: 1px solid ${props => props.$isActive 
     ? 'transparent'
     : 'rgba(59, 130, 246, 0.3)'};
   border-radius: 8px;
@@ -256,13 +262,15 @@ const FilterButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
   
   &:hover {
     transform: translateY(-2px);
-    background: ${props => props.isActive 
+    background: ${props => props.$isActive 
       ? 'linear-gradient(90deg, #3b82f6, #a855f7)'
       : 'rgba(30, 41, 59, 0.9)'};
-    border-color: ${props => props.isActive 
+    border-color: ${props => props.$isActive 
       ? 'transparent'
       : 'rgba(59, 130, 246, 0.5)'};
   }

@@ -109,11 +109,6 @@ const pulse = keyframes`
   100% { transform: scale(1); opacity: 0.6; }
 `;
 
-// const shimmer = keyframes`
-//   0% { background-position: -200% 0; }
-//   100% { background-position: 200% 0; }
-// `;
-
 // Styled Components
 const SpecialityContainer = styled.section`
   min-height: 100vh;

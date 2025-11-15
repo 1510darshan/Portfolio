@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaGithub, FaLinkedin, FaInstagram, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaInstagram, FaEnvelope, FaPhone, FaMapMarkerAlt, FaTwitter, FaGlobe } from 'react-icons/fa';
+import emailjs from '@emailjs/browser';
+import { contactAPI, profileAPI } from '../../services/api';
+
+// Initialize EmailJS with your public key
+emailjs.init('wiq1b55zPy2_IdIX3');
 
 const Contact = () => {
+  const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +17,24 @@ const Contact = () => {
   });
   
   const [isFormHighlighted, setIsFormHighlighted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await profileAPI.get();
+      if (response.data.data) {
+        setProfile(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   // Listen for external form updates (from navbar button)
   useEffect(() => {
@@ -35,18 +59,110 @@ const Contact = () => {
   }, []);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
+    
+    // Clear submit status when user makes changes
+    if (submitStatus.message) {
+      setSubmitStatus({ type: '', message: '' });
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would typically send the form data to a backend service
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.subject.trim()) {
+      newErrors.subject = 'Subject is required';
+    } else if (formData.subject.trim().length < 3) {
+      newErrors.subject = 'Subject must be at least 3 characters';
+    }
+    
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    alert('Thank you for your message! I\'ll get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!validateForm()) {
+      setSubmitStatus({ 
+        type: 'error', 
+        message: 'Please fix the errors before submitting' 
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setSubmitStatus({ type: '', message: '' });
+
+    try {
+      // Save to database first
+      await contactAPI.submit(formData);
+      
+      // Then send email via EmailJS
+      const serviceId = 'service_x3z1nzp';
+      const templateId = 'template_zx9ggto';
+      
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        to_name: 'Darshan Walhe',
+        to_email: 'darshanwalhe1510@gmail.com',
+        subject: formData.subject,
+        message: formData.message,
+        reply_to: formData.email
+      };
+      
+      await emailjs.send(serviceId, templateId, templateParams);
+      
+      setSubmitStatus({ 
+        type: 'success', 
+        message: 'Thank you for your message! I\'ll get back to you soon.' 
+      });
+      
+      // Reset form
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      
+      setSubmitStatus({ 
+        type: 'error', 
+        message: `Failed to send message: ${error.text || error.message}. Please try emailing me directly at darshanwalhe1510@gmail.com` 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -78,46 +194,80 @@ const Contact = () => {
               </ContactIcon>
               <ContactText>
                 <ContactLabel>Email</ContactLabel>
-                <ContactValue>darshanwalhe1510@gmail.com</ContactValue>
+                <ContactValue>{profile?.email || 'darshanwalhe1510@gmail.com'}</ContactValue>
               </ContactText>
             </ContactItem>
             
-            <ContactItem>
-              <ContactIcon>
-                <FaPhone />
-              </ContactIcon>
-              <ContactText>
-                <ContactLabel>Phone</ContactLabel>
-                <ContactValue>+91 8007582566</ContactValue>
-              </ContactText>
-            </ContactItem>
+            {profile?.phone && (
+              <ContactItem>
+                <ContactIcon>
+                  <FaPhone />
+                </ContactIcon>
+                <ContactText>
+                  <ContactLabel>Phone</ContactLabel>
+                  <ContactValue>{profile.phone}</ContactValue>
+                </ContactText>
+              </ContactItem>
+            )}
             
-            <ContactItem>
-              <ContactIcon>
-                <FaMapMarkerAlt />
-              </ContactIcon>
-              <ContactText>
-                <ContactLabel>Location</ContactLabel>
-                <ContactValue>Khalane, Dist-Tal Dhule, Maharashtra</ContactValue>
-              </ContactText>
-            </ContactItem>
+            {profile?.location && (
+              <ContactItem>
+                <ContactIcon>
+                  <FaMapMarkerAlt />
+                </ContactIcon>
+                <ContactText>
+                  <ContactLabel>Location</ContactLabel>
+                  <ContactValue>{profile.location}</ContactValue>
+                </ContactText>
+              </ContactItem>
+            )}
           </ContactDetails>
 
           <SocialLinksContainer>
-            <SocialLink href="https://github.com/1510darshan" target="_blank" rel="noopener noreferrer">
-              <FaGithub />
-            </SocialLink>
-            <SocialLink href="https://in.linkedin.com/in/darshan-walhe-475b60255" target="_blank" rel="noopener noreferrer">
-              <FaLinkedin />
-            </SocialLink>
-            <SocialLink href="https://www.instagram.com/dwalhe2402/" target="_blank" rel="noopener noreferrer">
-              <FaInstagram />
-            </SocialLink>
+            {profile?.github && (
+              <SocialLink href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="Visit my GitHub profile">
+                <FaGithub />
+              </SocialLink>
+            )}
+            {profile?.linkedin && (
+              <SocialLink href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Visit my LinkedIn profile">
+                <FaLinkedin />
+              </SocialLink>
+            )}
+            {profile?.twitter && (
+              <SocialLink href={profile.twitter} target="_blank" rel="noopener noreferrer" aria-label="Visit my Twitter profile">
+                <FaTwitter />
+              </SocialLink>
+            )}
+            {profile?.website && (
+              <SocialLink href={profile.website} target="_blank" rel="noopener noreferrer" aria-label="Visit my website">
+                <FaGlobe />
+              </SocialLink>
+            )}
+            {!profile && (
+              <>
+                <SocialLink href="https://github.com/1510darshan" target="_blank" rel="noopener noreferrer" aria-label="Visit my GitHub profile">
+                  <FaGithub />
+                </SocialLink>
+                <SocialLink href="https://in.linkedin.com/in/darshan-walhe-475b60255" target="_blank" rel="noopener noreferrer" aria-label="Visit my LinkedIn profile">
+                  <FaLinkedin />
+                </SocialLink>
+                <SocialLink href="https://www.instagram.com/dwalhe2402/" target="_blank" rel="noopener noreferrer" aria-label="Visit my Instagram profile">
+                  <FaInstagram />
+                </SocialLink>
+              </>
+            )}
           </SocialLinksContainer>
         </ContactInfo>
 
-        <ContactForm onSubmit={handleSubmit} isHighlighted={isFormHighlighted}>
+        <ContactForm onSubmit={handleSubmit} $isHighlighted={isFormHighlighted}>
           <FormTitle>Send me a message</FormTitle>
+          
+          {submitStatus.message && (
+            <StatusMessage type={submitStatus.type}>
+              {submitStatus.message}
+            </StatusMessage>
+          )}
           
           <FormGroup>
             <FormInput
@@ -126,8 +276,13 @@ const Contact = () => {
               placeholder="Your Name"
               value={formData.name}
               onChange={handleChange}
-              required
+              $hasError={!!errors.name}
+              disabled={isSubmitting}
+              aria-label="Your Name"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? "name-error" : undefined}
             />
+            {errors.name && <ErrorMessage id="name-error">{errors.name}</ErrorMessage>}
           </FormGroup>
           
           <FormGroup>
@@ -137,8 +292,13 @@ const Contact = () => {
               placeholder="Your Email"
               value={formData.email}
               onChange={handleChange}
-              required
+              $hasError={!!errors.email}
+              disabled={isSubmitting}
+              aria-label="Your Email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
             />
+            {errors.email && <ErrorMessage id="email-error">{errors.email}</ErrorMessage>}
           </FormGroup>
           
           <FormGroup>
@@ -148,8 +308,13 @@ const Contact = () => {
               placeholder="Subject"
               value={formData.subject}
               onChange={handleChange}
-              required
+              $hasError={!!errors.subject}
+              disabled={isSubmitting}
+              aria-label="Subject"
+              aria-invalid={!!errors.subject}
+              aria-describedby={errors.subject ? "subject-error" : undefined}
             />
+            {errors.subject && <ErrorMessage id="subject-error">{errors.subject}</ErrorMessage>}
           </FormGroup>
           
           <FormGroup>
@@ -159,12 +324,17 @@ const Contact = () => {
               rows="5"
               value={formData.message}
               onChange={handleChange}
-              required
+              $hasError={!!errors.message}
+              disabled={isSubmitting}
+              aria-label="Your Message"
+              aria-invalid={!!errors.message}
+              aria-describedby={errors.message ? "message-error" : undefined}
             />
+            {errors.message && <ErrorMessage id="message-error">{errors.message}</ErrorMessage>}
           </FormGroup>
           
-          <SubmitButton type="submit">
-            Send Message
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Sending...' : 'Send Message'}
             <ButtonGlow />
           </SubmitButton>
         </ContactForm>
@@ -455,7 +625,7 @@ const FormInput = styled.input`
   width: 100%;
   padding: 0.75rem;
   background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid ${props => props.$hasError ? '#ef4444' : 'rgba(59, 130, 246, 0.3)'};
   border-radius: 8px;
   color: #f8fafc;
   font-size: 0.9rem;
@@ -473,8 +643,13 @@ const FormInput = styled.input`
   
   &:focus {
     outline: none;
-    border-color: rgba(59, 130, 246, 0.6);
+    border-color: ${props => props.$hasError ? '#ef4444' : 'rgba(59, 130, 246, 0.6)'};
     background: rgba(15, 23, 42, 0.7);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
@@ -482,7 +657,7 @@ const FormTextarea = styled.textarea`
   width: 100%;
   padding: 0.75rem;
   background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid ${props => props.$hasError ? '#ef4444' : 'rgba(59, 130, 246, 0.3)'};
   border-radius: 8px;
   color: #f8fafc;
   font-size: 0.9rem;
@@ -504,8 +679,43 @@ const FormTextarea = styled.textarea`
   
   &:focus {
     outline: none;
-    border-color: rgba(59, 130, 246, 0.6);
+    border-color: ${props => props.$hasError ? '#ef4444' : 'rgba(59, 130, 246, 0.6)'};
     background: rgba(15, 23, 42, 0.7);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const ErrorMessage = styled.span`
+  display: block;
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+  
+  @media (min-width: 768px) {
+    font-size: 0.85rem;
+  }
+`;
+
+const StatusMessage = styled.div`
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  background: ${props => props.type === 'success' 
+    ? 'rgba(34, 197, 94, 0.1)' 
+    : 'rgba(239, 68, 68, 0.1)'};
+  border: 1px solid ${props => props.type === 'success' 
+    ? 'rgba(34, 197, 94, 0.3)' 
+    : 'rgba(239, 68, 68, 0.3)'};
+  color: ${props => props.type === 'success' ? '#4ade80' : '#f87171'};
+  
+  @media (min-width: 768px) {
+    font-size: 1rem;
   }
 `;
 
@@ -529,9 +739,15 @@ const SubmitButton = styled.button`
     font-size: 1rem;
   }
   
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 25px rgba(168, 85, 247, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
   }
   
   &::before {
@@ -550,7 +766,7 @@ const SubmitButton = styled.button`
     transition: 0.5s;
   }
   
-  &:hover::before {
+  &:hover:not(:disabled)::before {
     left: 100%;
   }
 `;
