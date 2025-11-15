@@ -48,12 +48,19 @@ const About = () => {
   
   const downloadResume = () => {
     const resumeUrl = profile?.resumeUrl || '/assets/Darshan_Walhe_Resume.pdf';
-    const link = document.createElement('a');
-    link.href = resumeUrl;
-    link.download = resumeUrl.split('/').pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    
+    // If it's a backend URL, open in new tab (cross-origin download)
+    if (resumeUrl.includes('http') || resumeUrl.includes('/uploads/')) {
+      window.open(resumeUrl, '_blank');
+    } else {
+      // Local file - use download attribute
+      const link = document.createElement('a');
+      link.href = resumeUrl;
+      link.download = resumeUrl.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
