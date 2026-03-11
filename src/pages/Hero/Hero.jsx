@@ -121,18 +121,28 @@ const CircleImage = styled.div`
   width: 300px;
   height: 300px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(0,212,255,0.2), rgba(123,47,255,0.3), rgba(4,13,26,0.9));
-  border: 2px solid rgba(0, 212, 255, 0.5);
-  box-shadow: 0 0 40px rgba(0, 212, 255, 0.3), 0 0 80px rgba(123, 47, 255, 0.2);
+  background: radial-gradient(circle at 35% 35%, rgba(0,212,255,0.15), rgba(123,47,255,0.2), rgba(4,13,26,0.95));
+  border: 2px solid rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 60px rgba(34, 211, 238, 0.25), 
+              0 8px 32px rgba(0, 0, 0, 0.4),
+              inset 0 0 40px rgba(34, 211, 238, 0.1);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &:hover {
+    box-shadow: 0 0 80px rgba(34, 211, 238, 0.35),
+                0 12px 48px rgba(0, 0, 0, 0.5),
+                inset 0 0 60px rgba(34, 211, 238, 0.15);
+    border-color: rgba(34, 211, 238, 0.6);
   }
 
   @media (max-width: 900px) {
@@ -256,53 +266,82 @@ const ButtonRow = styled.div`
 `;
 
 const PrimaryBtn = styled.a`
-  padding: 12px 28px;
+  padding: 14px 32px;
   background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
   color: white;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
 
   &:hover {
-    border-color: white;
-    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+  }
+
+  &:hover::before {
+    left: 100%;
   }
 
   @media (max-width: 480px) {
-    padding: 10px 22px;
-    font-size: 0.82rem;
+    padding: 12px 26px;
+    font-size: 0.85rem;
   }
 `;
 
 const SecondaryBtn = styled.a`
-  padding: 12px 28px;
-  background: linear-gradient(135deg, rgba(34,211,238,0.3), rgba(123,47,255,0.4));
+  padding: 14px 32px;
+  background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(123,47,255,0.3));
   border: 1.5px solid rgba(34, 211, 238, 0.4);
-  border-radius: 50px;
+  border-radius: 12px;
   color: white;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  position: relative;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(34, 211, 238, 0.1);
 
   &:hover {
-    background: linear-gradient(135deg, rgba(34,211,238,0.5), rgba(123,47,255,0.6));
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    background: linear-gradient(135deg, rgba(34,211,238,0.35), rgba(123,47,255,0.45));
+    border-color: rgba(34, 211, 238, 0.6);
+    box-shadow: 0 8px 32px rgba(34, 211, 238, 0.25);
+    transform: translateY(-2px);
   }
 
   @media (max-width: 480px) {
-    padding: 10px 22px;
-    font-size: 0.82rem;
+    padding: 12px 26px;
+    font-size: 0.85rem;
   }
+
+
+
 `;
 
 // ── Scroll Hint ───────────────────────────────────────────────
@@ -366,7 +405,7 @@ const Hero = () => {
           </NameHeading>
           <Tagline>Crafting Modern Digital Experiences</Tagline>
 
-          {/* Stats */}
+          {/* Stats
           <StatsRow>
             {[['5+', 'Years Exp'], ['50+', 'Projects'], ['20+', 'Clients']].map(([num, label]) => (
               <StatItem key={label}>
@@ -374,7 +413,7 @@ const Hero = () => {
                 <StatLabel>{label}</StatLabel>
               </StatItem>
             ))}
-          </StatsRow>
+          </StatsRow> */}
 
           <ButtonRow>
             <PrimaryBtn href="#projects">View Projects</PrimaryBtn>

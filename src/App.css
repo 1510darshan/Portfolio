@@ -1,0 +1,119 @@
+/* ── Professional Polish ─────────────────────────────────────────── */
+
+/* Smooth scrolling behavior */
+html {
+  scroll-padding-top: 100px;
+}
+
+/* Improved scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.6);
+}
+
+/* Smooth transitions */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus states for accessibility */
+:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.5);
+  outline-offset: 2px;
+}
+
+/* Button reset and hover improvements */
+button,
+a {
+  position: relative;
+}
+
+/* Disable outline on click but keep on focus */
+button:active,
+a:active {
+  outline: none;
+}
+
+/* Improve text rendering */
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* Animation classes for common effects */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Section spacing consistency */
+section {
+  position: relative;
+}
+
+/* Improved link styling */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Ensure images remain crisp */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Dark mode preference respects system settings */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

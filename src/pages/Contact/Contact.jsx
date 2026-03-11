@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useSendMessage } from '../../Services/Firebase/useFirebase';
 
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
@@ -48,19 +49,21 @@ const SectionTag = styled.p`
   color: #22d3ee;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
 `;
 
 const SectionTitle = styled.h2`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 900;
+  font-weight: 800;
   color: white;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.02em;
 
   span {
     background: linear-gradient(135deg, #22d3ee, #7b2fff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
@@ -101,19 +104,36 @@ const ContactItems = styled.div`
 const ContactItem = styled.a`
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: rgba(10, 26, 46, 0.8);
-  border: 1px solid rgba(0,212,255,0.1);
-  border-radius: 12px;
+  gap: 18px;
+  padding: 20px 24px;
+  background: rgba(10, 26, 46, 0.6);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 14px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
 
   &:hover {
-    border-color: rgba(34,211,238,0.4);
-    box-shadow: 0 0 20px rgba(34,211,238,0.08);
-    transform: translateX(6px);
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 8px 28px rgba(34, 211, 238, 0.12), 0 4px 12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-4px);
+    background: rgba(10, 26, 46, 0.8);
+  }
+
+  &:hover::before {
+    opacity: 1;
   }
 `;
 
@@ -181,24 +201,27 @@ const SocialBtn = styled.a`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
-  background: rgba(10,26,46,0.8);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px;
-  color: rgba(255,255,255,0.5);
+  padding: 11px 20px;
+  background: rgba(10, 26, 46, 0.6);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.55);
   font-size: 0.78rem;
   font-family: 'Space Mono', monospace;
+  font-weight: 600;
   text-decoration: none;
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
 
   &:hover {
     border-color: ${({ color }) => color || '#22d3ee'};
     color: ${({ color }) => color || '#22d3ee'};
-    background: ${({ color }) => `${color || '#22d3ee'}10`};
-    box-shadow: 0 0 14px ${({ color }) => `${color || '#22d3ee'}20`};
-    transform: translateY(-2px);
+    background: ${({ color }) => `${color || '#22d3ee'}15`};
+    box-shadow: 0 8px 24px ${({ color }) => `${color || '#22d3ee'}20`};
+    transform: translateY(-3px);
   }
 `;
 
@@ -206,11 +229,13 @@ const SocialBtn = styled.a`
 const AvailBadge = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background: rgba(0,255,136,0.06);
-  border: 1px solid rgba(0,255,136,0.2);
-  border-radius: 10px;
+  gap: 12px;
+  padding: 14px 22px;
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 `;
 
 const AvailDot = styled.div`
@@ -220,107 +245,130 @@ const AvailDot = styled.div`
   background: #00ff88;
   animation: ${pulse} 2s ease-in-out infinite;
   flex-shrink: 0;
+  box-shadow: 0 0 8px #00ff88;
 `;
 
 const AvailText = styled.span`
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.65);
   font-family: 'Space Mono', monospace;
+  font-weight: 500;
 
   strong {
     color: #00ff88;
+    font-weight: 600;
   }
 `;
 
 // ── Form ──────────────────────────────────────────────────────
 const FormCard = styled.div`
-  background: rgba(10, 26, 46, 0.7);
-  border: 1px solid rgba(0,212,255,0.1);
+  background: rgba(10, 26, 46, 0.6);
+  border: 1px solid rgba(34, 211, 238, 0.15);
   border-radius: 16px;
-  padding: 36px;
+  padding: 40px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
 
   @media (max-width: 480px) {
-    padding: 24px 20px;
+    padding: 28px 20px;
   }
 `;
 
 const FormTitle = styled.h3`
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: white;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
 `;
 
 const FormSubtitle = styled.p`
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 28px;
-  font-family: 'Space Mono', monospace;
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 32px;
+  line-height: 1.6;
 `;
 
 const FormGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 20px;
+  margin-bottom: 20px;
 
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 `;
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 `;
 
 const FormGroupFull = styled(FormGroup)`
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 `;
 
 const Label = styled.label`
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.4);
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-family: 'Space Mono', monospace;
+  font-weight: 600;
 `;
 
 const Input = styled.input`
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: rgba(4, 13, 26, 0.6);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 8px;
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 10px;
   color: white;
   font-size: 0.9rem;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Sora', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::placeholder {
-    color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.25);
   }
 
   &:focus {
-    border-color: rgba(34,211,238,0.4);
-    background: rgba(4,13,26,0.9);
-    box-shadow: 0 0 16px rgba(34,211,238,0.08);
+    border-color: rgba(34, 211, 238, 0.4);
+    background: rgba(4, 13, 26, 0.85);
+    box-shadow: 0 4px 20px rgba(34, 211, 238, 0.15);
+  }
+
+  &:hover {
+    border-color: rgba(34, 211, 238, 0.25);
   }
 `;
 
 const Select = styled.select`
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: rgba(4, 13, 26, 0.6);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 8px;
-  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.8);
   font-size: 0.9rem;
+  font-family: 'Sora', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   appearance: none;
+
+  &:hover {
+    border-color: rgba(34, 211, 238, 0.25);
+  }
+
+  &:focus {
+    border-color: rgba(34, 211, 238, 0.4);
+    background: rgba(4, 13, 26, 0.85);
+    box-shadow: 0 4px 20px rgba(34, 211, 238, 0.15);
+  }
 
   option {
     background: #071428;
@@ -334,38 +382,42 @@ const Select = styled.select`
 `;
 
 const Textarea = styled.textarea`
-  padding: 12px 16px;
+  padding: 14px 18px;
   background: rgba(4, 13, 26, 0.6);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 8px;
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 10px;
   color: white;
   font-size: 0.9rem;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Sora', sans-serif;
   outline: none;
   resize: vertical;
-  min-height: 130px;
-  transition: all 0.3s ease;
+  min-height: 140px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::placeholder {
-    color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.25);
   }
 
   &:focus {
-    border-color: rgba(34,211,238,0.4);
-    background: rgba(4,13,26,0.9);
-    box-shadow: 0 0 16px rgba(34,211,238,0.08);
+    border-color: rgba(34, 211, 238, 0.4);
+    background: rgba(4, 13, 26, 0.85);
+    box-shadow: 0 4px 20px rgba(34, 211, 238, 0.15);
+  }
+
+  &:hover {
+    border-color: rgba(34, 211, 238, 0.25);
   }
 `;
 
 const SubmitBtn = styled.button`
   width: 100%;
-  padding: 14px 28px;
+  padding: 16px 32px;
   background: ${({ sent }) =>
     sent
-      ? 'linear-gradient(135deg, #00ff88, #00aa55)'
-      : 'linear-gradient(135deg, rgba(34,211,238,0.8), rgba(123,47,255,0.8))'};
+      ? 'linear-gradient(135deg, #00ff88, #2fff88)'
+      : 'linear-gradient(135deg, #22d3ee, #7b2fff)'};
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
   font-size: 0.9rem;
   font-weight: 700;
@@ -373,19 +425,42 @@ const SubmitBtn = styled.button`
   text-transform: uppercase;
   font-family: 'Space Mono', monospace;
   cursor: ${({ loading }) => loading ? 'not-allowed' : 'pointer'};
-  transition: all 0.3s ease;
-  margin-top: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px ${({ sent }) => sent ? 'rgba(0, 255, 136, 0.2)' : 'rgba(34, 211, 238, 0.2)'};
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   &:hover {
-    transform: ${({ loading }) => loading ? 'none' : 'translateY(-2px)'};
+    transform: ${({ loading }) => loading ? 'none' : 'translateY(-3px)'};
     box-shadow: ${({ sent }) =>
       sent
-        ? '0 8px 24px rgba(0,255,136,0.3)'
-        : '0 8px 24px rgba(34,211,238,0.3)'};
+        ? '0 12px 40px rgba(0, 255, 136, 0.35)'
+        : '0 12px 40px rgba(34, 211, 238, 0.35)'};
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 `;
 
@@ -473,9 +548,9 @@ const Contact = () => {
   const [form, setForm] = useState({
     name: '', email: '', subject: '', message: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent]       = useState(false);
-  const [errors, setErrors]   = useState({});
+  const { sendMessage, loading, error, success } = useSendMessage();
+  const [errors, setErrors] = useState({});
+  const [sent, setSent] = useState(false);
 
   const validate = () => {
     const e = {};
@@ -486,18 +561,28 @@ const Contact = () => {
     return e;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
     setErrors({});
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSent(true);
-      setForm({ name: '', email: '', subject: '', message: '' });
-      setTimeout(() => setSent(false), 4000);
-    }, 1800);
+    
+    try {
+      const result = await sendMessage({
+        name: form.name,
+        email: form.email,
+        subject: form.subject || 'General Inquiry',
+        message: form.message
+      });
+      
+      if (result) {
+        setSent(true);
+        setForm({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setSent(false), 4000);
+      }
+    } catch (err) {
+      setErrors({ submit: error || 'Failed to send message' });
+    }
   };
 
   const handleChange = (field, value) => {
@@ -565,6 +650,12 @@ const Contact = () => {
             <FormTitle>Send a Message</FormTitle>
             <FormSubtitle>// I'll get back to you within 24 hours</FormSubtitle>
 
+            {error && !sent && (
+              <div style={{ padding: '12px 16px', background: 'rgba(255,45,120,0.1)', border: '1px solid rgba(255,45,120,0.3)', borderRadius: '8px', marginBottom: '20px', fontSize: '0.8rem', color: 'rgba(255,45,120,0.9)', fontFamily: 'Space Mono' }}>
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
               <FormGrid>
                 <FormGroup>
@@ -573,6 +664,7 @@ const Contact = () => {
                     placeholder="John Doe"
                     value={form.name}
                     onChange={e => handleChange('name', e.target.value)}
+                    disabled={loading}
                     style={{ borderColor: errors.name ? '#ff2d78' : '' }}
                   />
                   {errors.name && (
@@ -589,6 +681,7 @@ const Contact = () => {
                     placeholder="john@example.com"
                     value={form.email}
                     onChange={e => handleChange('email', e.target.value)}
+                    disabled={loading}
                     style={{ borderColor: errors.email ? '#ff2d78' : '' }}
                   />
                   {errors.email && (
@@ -604,6 +697,7 @@ const Contact = () => {
                 <Select
                   value={form.subject}
                   onChange={e => handleChange('subject', e.target.value)}
+                  disabled={loading}
                 >
                   <option value="">Select a subject...</option>
                   {subjects.map(s => (
@@ -618,6 +712,7 @@ const Contact = () => {
                   placeholder="Tell me about your project or idea..."
                   value={form.message}
                   onChange={e => handleChange('message', e.target.value)}
+                  disabled={loading}
                   style={{ borderColor: errors.message ? '#ff2d78' : '' }}
                 />
                 {errors.message && (
@@ -629,13 +724,13 @@ const Contact = () => {
 
               <SubmitBtn
                 type="submit"
-                sent={sent ? 1 : 0}
+                sent={(success || sent) ? 1 : 0}
                 loading={loading ? 1 : 0}
                 disabled={loading}
               >
                 {loading ? (
                   <><Spinner /> Sending...</>
-                ) : sent ? (
+                ) : (success || sent) ? (
                   <>✓ Message Sent!</>
                 ) : (
                   <>Send Message →</>

@@ -40,19 +40,21 @@ const SectionTag = styled.p`
   color: #22d3ee;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
 `;
 
 const SectionTitle = styled.h2`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 900;
+  font-weight: 800;
   color: white;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.02em;
 
   span {
     background: linear-gradient(135deg, #22d3ee, #7b2fff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
@@ -89,18 +91,23 @@ const TagRow = styled.div`
 `;
 
 const Tag = styled.span`
-  padding: 6px 16px;
-  border: 1px solid rgba(0, 212, 255, 0.25);
-  border-radius: 20px;
+  padding: 8px 18px;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  border-radius: 24px;
   font-size: 0.78rem;
   color: #22d3ee;
   letter-spacing: 0.1em;
   font-family: 'Space Mono', monospace;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  cursor: pointer;
 
   &:hover {
-    background: rgba(34, 211, 238, 0.1);
-    border-color: #22d3ee;
+    background: rgba(34, 211, 238, 0.12);
+    border-color: rgba(34, 211, 238, 0.5);
+    box-shadow: 0 4px 12px rgba(34, 211, 238, 0.15);
+    transform: translateY(-2px);
   }
 `;
 
@@ -112,20 +119,40 @@ const CardsBlock = styled.div`
 `;
 
 const Card = styled.div`
-  padding: 24px;
-  background: rgba(10, 26, 46, 0.8);
-  border: 1px solid rgba(0, 212, 255, 0.1);
-  border-radius: 12px;
+  padding: 28px;
+  background: rgba(10, 26, 46, 0.6);
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 14px;
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
 
   &:hover {
-    border-color: rgba(34, 211, 238, 0.4);
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
-    transform: translateX(6px);
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 8px 28px rgba(34, 211, 238, 0.12), 0 4px 12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-4px);
+    background: rgba(10, 26, 46, 0.8);
+  }
+
+  &:hover::before {
+    opacity: 1;
   }
 `;
 
@@ -169,33 +196,55 @@ const StatsRow = styled.div`
 `;
 
 const StatCard = styled.div`
-  padding: 28px 20px;
+  padding: 32px 24px;
   background: rgba(10, 26, 46, 0.6);
-  border: 1px solid rgba(0, 212, 255, 0.1);
-  border-radius: 12px;
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-radius: 14px;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   &:hover {
     border-color: rgba(34, 211, 238, 0.3);
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.07);
+    box-shadow: 0 8px 28px rgba(34, 211, 238, 0.12), 0 4px 12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-4px);
+    background: rgba(10, 26, 46, 0.8);
+  }
+
+  &:hover::before {
+    opacity: 1;
   }
 `;
 
 const StatNum = styled.div`
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: 900;
   color: #22d3ee;
-  text-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-family: 'Space Mono', monospace;
 `;
 
 const StatLabel = styled.div`
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
   letter-spacing: 0.15em;
+  font-weight: 500;
 `;
 
 // ── Data ─────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useFirebase } from '../../Services/Firebase/useFirebase';
 
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
@@ -44,19 +45,21 @@ const SectionTag = styled.p`
   color: #22d3ee;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
 `;
 
 const SectionTitle = styled.h2`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 900;
+  font-weight: 800;
   color: white;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.02em;
 
   span {
     background: linear-gradient(135deg, #22d3ee, #7b2fff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
@@ -67,22 +70,42 @@ const TabRow = styled.div`
 `;
 
 const Tab = styled.button`
-  padding: 10px 28px;
-  border-radius: 50px;
-  font-size: 0.78rem;
+  padding: 11px 28px;
+  border-radius: 12px;
+  font-size: 0.76rem;
   font-family: 'Space Mono', monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.1)'};
-  background: ${({ active }) => active ? 'rgba(34,211,238,0.1)' : 'transparent'};
-  color: ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.4)'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.12)'};
+  background: ${({ active }) => active ? 'rgba(34,211,238,0.15)' : 'transparent'};
+  color: ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.45)'};
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(34,211,238,0.1);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
 
   &:hover {
     border-color: #22d3ee;
     color: #22d3ee;
-    background: rgba(34,211,238,0.08);
+    background: rgba(34,211,238,0.12);
+    transform: translateY(-2px);
+  }
+
+  &:hover::before {
+    left: 100%;
   }
 `;
 
@@ -146,20 +169,38 @@ const Dot = styled.div`
 
 const Card = styled.div`
   flex: 1;
-  padding: 24px 28px;
-  background: rgba(10, 26, 46, 0.8);
+  padding: 28px 32px;
+  background: rgba(10, 26, 46, 0.6);
   border: 1px solid ${({ current }) =>
-    current ? 'rgba(123,47,255,0.3)' : 'rgba(0,212,255,0.1)'};
-  border-radius: 14px;
-  transition: all 0.3s ease;
+    current ? 'rgba(123,47,255,0.3)' : 'rgba(34,211,238,0.15)'};
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, ${({ current }) =>
+      current ? 'rgba(123,47,255,0.1)' : 'rgba(34,211,238,0.08)'}, transparent);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
 
   &:hover {
     border-color: ${({ current }) =>
-      current ? 'rgba(123,47,255,0.6)' : 'rgba(34,211,238,0.4)'};
-    box-shadow: 0 0 24px ${({ current }) =>
-      current ? 'rgba(123,47,255,0.1)' : 'rgba(34,211,238,0.08)'};
-    transform: translateX(6px);
+      current ? 'rgba(123,47,255,0.5)' : 'rgba(34,211,238,0.35)'};
+    box-shadow: 0 8px 28px ${({ current }) =>
+      current ? 'rgba(123,47,255,0.15)' : 'rgba(34,211,238,0.12)'}, 0 4px 12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-4px);
+    background: rgba(10, 26, 46, 0.8);
+  }
+
+  &:hover::before {
+    opacity: 1;
   }
 `;
 
@@ -375,79 +416,90 @@ const CertYear = styled.span`
   font-family: 'Space Mono', monospace;
 `;
 
-// ── Data ─────────────────────────────────────────────────────
-const experiences = [
-  {
-    role: 'Senior Full-Stack Engineer',
-    company: 'TechCorp Global',
-    type: 'Full-time',
-    date: 'Aug 2024 — Present',
-    current: true,
-    desc: 'Leading a team of 8 engineers to build an enterprise SaaS platform serving 100K+ users. Architected microservices migration reducing API latency by 60% and cutting infrastructure costs by 35%.',
-    tags: ['React', 'Node.js', 'AWS', 'Kubernetes', 'PostgreSQL', 'Redis'],
-  },
-  {
-    role: 'Full-Stack Developer',
-    company: 'StartupXYZ',
-    type: 'Full-time',
-    date: 'Jun 2022 — Jul 2024',
-    current: false,
-    desc: 'Built React/Node.js applications from scratch serving 20K daily active users. Implemented real-time features using WebSockets and improved core web vitals scores by 40%.',
-    tags: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'Socket.io'],
-  },
-  {
-    role: 'Frontend Developer',
-    company: 'Digital Agency Co.',
-    type: 'Full-time',
-    date: 'Jul 2021 — May 2022',
-    current: false,
-    desc: 'Created responsive web experiences for Fortune 500 clients. Developed reusable component libraries adopted across 15+ projects, reducing development time by 30%.',
-    tags: ['React', 'Vue.js', 'CSS/SASS', 'Figma', 'Webpack'],
-  },
-  {
-    role: 'Junior Developer',
-    company: 'FreelanceStudio',
-    type: 'Contract',
-    date: 'Jan 2020 — Jun 2021',
-    current: false,
-    desc: 'Started professional journey delivering 20+ web projects for small businesses. Learned React ecosystem deeply and built first production-grade applications.',
-    tags: ['JavaScript', 'React', 'WordPress', 'PHP', 'MySQL'],
-  },
-];
 
-const education = [
-  {
-    icon: '🎓',
-    degree: 'B.Tech in Computer Science',
-    school: 'MIT College of Engineering',
-    year: '2016 — 2020',
-    grade: 'CGPA: 8.7 / 10',
-    color: '#22d3ee',
-  },
-  {
-    icon: '📚',
-    degree: 'Higher Secondary Certificate',
-    school: 'Pune Board of Education',
-    year: '2014 — 2016',
-    grade: 'Percentage: 91.4%',
-    color: '#7b2fff',
-  },
-];
-
-const certifications = [
-  { icon: '☁', name: 'AWS Certified Solutions Architect', issuer: 'Amazon', year: '2023', color: '#ff9900' },
-  { icon: '⚛', name: 'React Advanced Patterns', issuer: 'Frontend Masters', year: '2023', color: '#22d3ee' },
-  { icon: '🐳', name: 'Certified Kubernetes Administrator', issuer: 'CNCF', year: '2022', color: '#2496ed' },
-  { icon: '🔐', name: 'Certified Ethical Hacker', issuer: 'EC-Council', year: '2022', color: '#ff2d78' },
-  { icon: '🐍', name: 'Python for Data Science', issuer: 'Coursera', year: '2021', color: '#7b2fff' },
-  { icon: '🌐', name: 'Google Cloud Professional', issuer: 'Google', year: '2024', color: '#00ff88' },
-];
-
-const tabs = ['Experience', 'Education', 'Certifications'];
 
 // ── Component ────────────────────────────────────────────────
 const Experience = () => {
   const [activeTab, setActiveTab] = useState('Experience');
+  const { data: firebaseExperiences, loading } = useFirebase('experiences');
+
+  // Tabs
+  const tabs = ['Experience', 'Education', 'Certifications'];
+
+  // Education data (static)
+  const education = [
+    {
+      icon: '🎓',
+      degree: 'B.Tech in Computer Science',
+      school: 'MIT College of Engineering',
+      year: '2016 — 2020',
+      grade: 'CGPA: 8.7 / 10',
+      color: '#22d3ee',
+    },
+    {
+      icon: '📚',
+      degree: 'Higher Secondary Certificate',
+      school: 'Pune Board of Education',
+      year: '2014 — 2016',
+      grade: 'Percentage: 91.4%',
+      color: '#7b2fff',
+    },
+  ];
+
+  // Certifications data (static)
+  const certifications = [
+    { icon: '☁', name: 'AWS Certified Solutions Architect', issuer: 'Amazon', year: '2023', color: '#ff9900' },
+    { icon: '⚛', name: 'React Advanced Patterns', issuer: 'Frontend Masters', year: '2023', color: '#22d3ee' },
+    { icon: '🐳', name: 'Certified Kubernetes Administrator', issuer: 'CNCF', year: '2022', color: '#2496ed' },
+    { icon: '🔐', name: 'Certified Ethical Hacker', issuer: 'EC-Council', year: '2022', color: '#ff2d78' },
+    { icon: '🐍', name: 'Python for Data Science', issuer: 'Coursera', year: '2021', color: '#7b2fff' },
+    { icon: '🌐', name: 'Google Cloud Professional', issuer: 'Google', year: '2024', color: '#00ff88' },
+  ];
+
+  // Fallback data for experience if Firebase is not available
+  const defaultExperiences = [
+    {
+      role: 'Senior Full-Stack Engineer',
+      company: 'TechCorp Global',
+      type: 'Full-time',
+      date: 'Aug 2024 — Present',
+      current: true,
+      desc: 'Leading a team of 8 engineers to build an enterprise SaaS platform serving 100K+ users. Architected microservices migration reducing API latency by 60% and cutting infrastructure costs by 35%.',
+      tags: ['React', 'Node.js', 'AWS', 'Kubernetes', 'PostgreSQL', 'Redis'],
+    },
+    {
+      role: 'Full-Stack Developer',
+      company: 'StartupXYZ',
+      type: 'Full-time',
+      date: 'Jun 2022 — Jul 2024',
+      current: false,
+      desc: 'Built React/Node.js applications from scratch serving 20K daily active users. Implemented real-time features using WebSockets and improved core web vitals scores by 40%.',
+      tags: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'Socket.io'],
+    },
+    {
+      role: 'Frontend Developer',
+      company: 'Digital Agency Co.',
+      type: 'Full-time',
+      date: 'Jul 2021 — May 2022',
+      current: false,
+      desc: 'Created responsive web experiences for Fortune 500 clients. Developed reusable component libraries adopted across 15+ projects, reducing development time by 30%.',
+      tags: ['React', 'Vue.js', 'CSS/SASS', 'Figma', 'Webpack'],
+    },
+    {
+      role: 'Junior Developer',
+      company: 'FreelanceStudio',
+      type: 'Contract',
+      date: 'Jan 2020 — Jun 2021',
+      current: false,
+      desc: 'Started professional journey delivering 20+ web projects for small businesses. Learned React ecosystem deeply and built first production-grade applications.',
+      tags: ['JavaScript', 'React', 'WordPress', 'PHP', 'MySQL'],
+    },
+  ];
+
+  // Use Firebase experiences if available, otherwise use fallback
+  const expList = firebaseExperiences && firebaseExperiences.length > 0 
+    ? firebaseExperiences 
+    : defaultExperiences;
 
   return (
     <ExperienceContainer id="experience">
@@ -474,31 +526,52 @@ const Experience = () => {
 
         {/* ── Experience Tab ── */}
         {activeTab === 'Experience' && (
-          <TimelineWrap>
-            <TimelineLine />
-            {experiences.map((exp, i) => (
-              <TimelineItem key={i}>
-                <DotWrap>
-                  <Dot current={exp.current ? 1 : 0} />
-                </DotWrap>
-                <Card current={exp.current ? 1 : 0}>
-                  <CardTop>
-                    <Role>{exp.role}</Role>
-                    <DateBadge>{exp.date}</DateBadge>
-                  </CardTop>
-                  <Company>
-                    <CompanyName current={exp.current}>{exp.company}</CompanyName>
-                    <CompanyType>· {exp.type}</CompanyType>
-                    {exp.current && <CurrentBadge>Current</CurrentBadge>}
-                  </Company>
-                  <Desc>{exp.desc}</Desc>
-                  <TagRow>
-                    {exp.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
-                  </TagRow>
-                </Card>
-              </TimelineItem>
-            ))}
-          </TimelineWrap>
+          <>
+            {loading ? (
+              <TimelineWrap>
+                <TimelineLine />
+                {[...Array(3)].map((_, i) => (
+                  <TimelineItem key={i}>
+                    <DotWrap>
+                      <Dot />
+                    </DotWrap>
+                    <Card style={{ opacity: 0.5 }}>
+                      <CardTop>
+                        <Role style={{ height: '20px', width: '40%', background: 'rgba(255,255,255,0.1)' }} />
+                      </CardTop>
+                      <Desc style={{ height: '40px', background: 'rgba(255,255,255,0.1)' }} />
+                    </Card>
+                  </TimelineItem>
+                ))}
+              </TimelineWrap>
+            ) : (
+              <TimelineWrap>
+                <TimelineLine />
+                {expList.map((exp, i) => (
+                  <TimelineItem key={i}>
+                    <DotWrap>
+                      <Dot current={exp.current ? 1 : 0} />
+                    </DotWrap>
+                    <Card current={exp.current ? 1 : 0}>
+                      <CardTop>
+                        <Role>{exp.role}</Role>
+                        <DateBadge>{exp.date}</DateBadge>
+                      </CardTop>
+                      <Company>
+                        <CompanyName current={exp.current}>{exp.company}</CompanyName>
+                        <CompanyType>· {exp.type}</CompanyType>
+                        {exp.current && <CurrentBadge>Current</CurrentBadge>}
+                      </Company>
+                      <Desc>{exp.desc}</Desc>
+                      <TagRow>
+                        {exp.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}
+                      </TagRow>
+                    </Card>
+                  </TimelineItem>
+                ))}
+              </TimelineWrap>
+            )}
+          </>
         )}
 
         {/* ── Education Tab ── */}

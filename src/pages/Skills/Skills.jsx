@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useFirebase } from '../../Services/Firebase/useFirebase';
 
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
@@ -49,19 +50,21 @@ const SectionTag = styled.p`
   color: #22d3ee;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
 `;
 
 const SectionTitle = styled.h2`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 900;
+  font-weight: 800;
   color: white;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.02em;
 
   span {
     background: linear-gradient(135deg, #22d3ee, #7b2fff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
@@ -116,22 +119,42 @@ const TabRow = styled.div`
 `;
 
 const Tab = styled.button`
-  padding: 8px 22px;
-  border-radius: 50px;
-  font-size: 0.78rem;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-size: 0.76rem;
   font-family: 'Space Mono', monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.1)'};
-  background: ${({ active }) => active ? 'rgba(34,211,238,0.1)' : 'transparent'};
-  color: ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.4)'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.12)'};
+  background: ${({ active }) => active ? 'rgba(34,211,238,0.15)' : 'transparent'};
+  color: ${({ active }) => active ? '#22d3ee' : 'rgba(255,255,255,0.45)'};
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(34,211,238,0.1);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
 
   &:hover {
     border-color: #22d3ee;
     color: #22d3ee;
-    background: rgba(34,211,238,0.08);
+    background: rgba(34,211,238,0.12);
+    transform: translateY(-2px);
+  }
+
+  &:hover::before {
+    left: 100%;
   }
 `;
 
@@ -146,20 +169,37 @@ const SkillsGrid = styled.div`
 `;
 
 const SkillCard = styled.div`
-  padding: 20px;
-  background: rgba(10, 26, 46, 0.8);
+  padding: 24px;
+  background: rgba(10, 26, 46, 0.6);
   border: 1px solid ${({ color }) => `${color}22`};
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: all 0.3s ease;
+  gap: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, ${({ color }) => `${color}10`}, transparent);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
 
   &:hover {
-    border-color: ${({ color }) => `${color}66`};
-    box-shadow: 0 0 20px ${({ color }) => `${color}15`};
-    transform: translateY(-4px);
+    border-color: ${({ color }) => `${color}55`};
+    box-shadow: 0 8px 28px ${({ color }) => `${color}15`}, 0 4px 12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-6px);
+    background: rgba(10, 26, 46, 0.8);
+  }
+
+  &:hover::before {
+    opacity: 1;
   }
 `;
 
@@ -251,54 +291,7 @@ const Tool = styled.div`
   }
 `;
 
-// ── Data ─────────────────────────────────────────────────────
-const ringSkills = [
-  { name: 'React',      level: 95, color: '#22d3ee', icon: '⚛' },
-  { name: 'Python',     level: 88, color: '#7b2fff', icon: '🐍' },
-  { name: 'AWS',        level: 82, color: '#ff9900', icon: '☁' },
-  { name: 'Node.js',    level: 90, color: '#00ff88', icon: '⬡' },
-  { name: 'TypeScript', level: 87, color: '#3178c6', icon: 'TS' },
-  { name: 'Docker',     level: 78, color: '#2496ed', icon: '🐳' },
-];
 
-const categories = {
-  Frontend: [
-    { name: 'React',      level: 95, color: '#22d3ee', icon: '⚛' },
-    { name: 'TypeScript', level: 87, color: '#3178c6', icon: 'TS' },
-    { name: 'Next.js',    level: 85, color: '#ffffff', icon: '▲' },
-    { name: 'Vue.js',     level: 75, color: '#42b883', icon: '💚' },
-    { name: 'Three.js',   level: 70, color: '#ff6b6b', icon: '3D' },
-    { name: 'CSS/SASS',   level: 92, color: '#ff2d78', icon: '🎨' },
-    { name: 'Tailwind',   level: 90, color: '#38bdf8', icon: '💨' },
-    { name: 'Redux',      level: 83, color: '#764abc', icon: '🔄' },
-  ],
-  Backend: [
-    { name: 'Node.js',    level: 90, color: '#00ff88', icon: '⬡' },
-    { name: 'Python',     level: 88, color: '#7b2fff', icon: '🐍' },
-    { name: 'Java',       level: 80, color: '#f89820', icon: '☕' },
-    { name: 'Go',         level: 72, color: '#00acd7', icon: '🐹' },
-    { name: 'PostgreSQL', level: 85, color: '#336791', icon: '🐘' },
-    { name: 'MongoDB',    level: 82, color: '#47a248', icon: '🍃' },
-    { name: 'Redis',      level: 75, color: '#ff4438', icon: '⚡' },
-    { name: 'GraphQL',    level: 78, color: '#e535ab', icon: '◈' },
-  ],
-  DevOps: [
-    { name: 'AWS',        level: 82, color: '#ff9900', icon: '☁' },
-    { name: 'Docker',     level: 78, color: '#2496ed', icon: '🐳' },
-    { name: 'Kubernetes', level: 70, color: '#326ce5', icon: '⚙' },
-    { name: 'Terraform',  level: 68, color: '#7b42bc', icon: '🏗' },
-    { name: 'GitHub CI',  level: 85, color: '#f05032', icon: '🔁' },
-    { name: 'Linux',      level: 88, color: '#fcc624', icon: '🐧' },
-    { name: 'Nginx',      level: 75, color: '#009639', icon: '🌐' },
-    { name: 'Prometheus', level: 65, color: '#e6522c', icon: '📊' },
-  ],
-};
-
-const tools = [
-  'VS Code', 'Git', 'Figma', 'Postman', 'Jest',
-  'Webpack', 'Vite', 'ESLint', 'Prettier', 'Jira',
-  'Slack', 'Notion', 'Vercel', 'Netlify', 'Firebase',
-];
 
 // ── Ring Component ────────────────────────────────────────────
 const SkillRing = ({ name, level, color, icon }) => {
@@ -352,6 +345,71 @@ const SkillRing = ({ name, level, color, icon }) => {
 // ── Component ────────────────────────────────────────────────
 const Skills = () => {
   const [activeTab, setActiveTab] = useState('Frontend');
+  const { data: firebaseSkills, loading } = useFirebase('skills');
+
+  // Fallback data for each category if Firebase data is not available
+  const defaultCategories = {
+    Frontend: [
+      { name: 'React',      level: 95, color: '#22d3ee', icon: '⚛' },
+      { name: 'TypeScript', level: 87, color: '#3178c6', icon: 'TS' },
+      { name: 'Next.js',    level: 85, color: '#ffffff', icon: '▲' },
+      { name: 'Vue.js',     level: 75, color: '#42b883', icon: '💚' },
+      { name: 'Three.js',   level: 70, color: '#ff6b6b', icon: '3D' },
+      { name: 'CSS/SASS',   level: 92, color: '#ff2d78', icon: '🎨' },
+      { name: 'Tailwind',   level: 90, color: '#38bdf8', icon: '💨' },
+      { name: 'Redux',      level: 83, color: '#764abc', icon: '🔄' },
+    ],
+    Backend: [
+      { name: 'Node.js',    level: 90, color: '#00ff88', icon: '⬡' },
+      { name: 'Python',     level: 88, color: '#7b2fff', icon: '🐍' },
+      { name: 'Java',       level: 80, color: '#f89820', icon: '☕' },
+      { name: 'Go',         level: 72, color: '#00acd7', icon: '🐹' },
+      { name: 'PostgreSQL', level: 85, color: '#336791', icon: '🐘' },
+      { name: 'MongoDB',    level: 82, color: '#47a248', icon: '🍃' },
+      { name: 'Redis',      level: 75, color: '#ff4438', icon: '⚡' },
+      { name: 'GraphQL',    level: 78, color: '#e535ab', icon: '◈' },
+    ],
+    DevOps: [
+      { name: 'AWS',        level: 82, color: '#ff9900', icon: '☁' },
+      { name: 'Docker',     level: 78, color: '#2496ed', icon: '🐳' },
+      { name: 'Kubernetes', level: 70, color: '#326ce5', icon: '⚙' },
+      { name: 'Terraform',  level: 68, color: '#7b42bc', icon: '🏗' },
+      { name: 'GitHub CI',  level: 85, color: '#f05032', icon: '🔁' },
+      { name: 'Linux',      level: 88, color: '#fcc624', icon: '🐧' },
+      { name: 'Nginx',      level: 75, color: '#009639', icon: '🌐' },
+      { name: 'Prometheus', level: 65, color: '#e6522c', icon: '📊' },
+    ],
+  };
+
+  // Build categories from Firebase data if available
+  const categories = firebaseSkills && firebaseSkills.length > 0
+    ? firebaseSkills.reduce((acc, skill) => {
+        const cat = skill.category || 'Frontend';
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(skill);
+        return acc;
+      }, {})
+    : defaultCategories;
+
+  // Get ring skills from Firebase or default
+  const ringSkills = firebaseSkills && firebaseSkills.length > 0
+    ? firebaseSkills.filter(s => s.featured === true).slice(0, 3)
+    : [
+        { name: 'React',      level: 95, color: '#22d3ee', icon: '⚛' },
+        { name: 'Node.js',    level: 90, color: '#00ff88', icon: '⬡' },
+        { name: 'TypeScript', level: 87, color: '#3178c6', icon: 'TS' },
+      ];
+
+  const tools = ['VS Code', 'Git', 'Figma', 'Postman', 'Jest',
+    'Webpack', 'Vite', 'ESLint', 'Prettier', 'Jira',
+    'Slack', 'Notion', 'Vercel', 'Netlify', 'Firebase'];
+
+  const tabOptions = Object.keys(categories);
+
+  // Set active tab if not available in current data
+  if (!tabOptions.includes(activeTab) && tabOptions.length > 0) {
+    setActiveTab(tabOptions[0]);
+  }
 
   return (
     <SkillsContainer id="skills">
@@ -364,16 +422,18 @@ const Skills = () => {
         </div>
 
         {/* Rings */}
-        <RingsRow>
-          {ringSkills.map(s => (
-            <SkillRing key={s.name} {...s} />
-          ))}
-        </RingsRow>
+        {!loading && (
+          <RingsRow>
+            {ringSkills.map(s => (
+              <SkillRing key={s.name} {...s} />
+            ))}
+          </RingsRow>
+        )}
 
         {/* Category Tabs + Grid */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <TabRow>
-            {Object.keys(categories).map(cat => (
+            {tabOptions.map(cat => (
               <Tab
                 key={cat}
                 active={activeTab === cat ? 1 : 0}
@@ -384,20 +444,30 @@ const Skills = () => {
             ))}
           </TabRow>
 
-          <SkillsGrid>
-            {categories[activeTab].map(skill => (
-              <SkillCard key={skill.name} color={skill.color}>
-                <SkillTop>
-                  <SkillIcon color={skill.color}>{skill.icon}</SkillIcon>
-                  <SkillPercent color={skill.color}>{skill.level}%</SkillPercent>
-                </SkillTop>
-                <SkillName>{skill.name}</SkillName>
-                <BarTrack>
-                  <BarFill level={skill.level} color={skill.color} />
-                </BarTrack>
-              </SkillCard>
-            ))}
-          </SkillsGrid>
+          {loading ? (
+            <SkillsGrid>
+              {[...Array(4)].map((_, i) => (
+                <SkillCard key={i} color="#22d3ee" style={{ opacity: 0.5 }}>
+                  <SkillName style={{ height: '20px', background: 'rgba(255,255,255,0.1)' }} />
+                </SkillCard>
+              ))}
+            </SkillsGrid>
+          ) : (
+            <SkillsGrid>
+              {categories[activeTab] && categories[activeTab].map(skill => (
+                <SkillCard key={skill.name} color={skill.color}>
+                  <SkillTop>
+                    <SkillIcon color={skill.color}>{skill.icon}</SkillIcon>
+                    <SkillPercent color={skill.color}>{skill.level}%</SkillPercent>
+                  </SkillTop>
+                  <SkillName>{skill.name}</SkillName>
+                  <BarTrack>
+                    <BarFill level={skill.level} color={skill.color} />
+                  </BarTrack>
+                </SkillCard>
+              ))}
+            </SkillsGrid>
+          )}
         </div>
 
         {/* Tools */}
