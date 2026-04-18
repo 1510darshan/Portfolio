@@ -1,4 +1,4 @@
-const API_URL = 'https://portfolio-swart-theta-iljumjifai.vercel.app/';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeader = () => {
   const token = localStorage.getItem('adminToken');
