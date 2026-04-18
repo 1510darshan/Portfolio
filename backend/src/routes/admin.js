@@ -166,6 +166,8 @@ router.get('/messages', async (req, res) => {
     snapshot.forEach(doc => {
       messages.push({ id: doc.id, ...doc.data() });
     });
+
+  console.log("Messages : ", messages);
     res.json(messages);
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -534,11 +534,11 @@ const toMs = (ts) => {
 const timeAgo = (ts) => {
   const d = Date.now() - toMs(ts);
   const m = Math.floor(d / 60000);
-  if (m < 1)  return 'just now';
+  if (m < 1) return 'just now';
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h/24)}d ago`;
+  return `${Math.floor(h / 24)}d ago`;
 };
 
 const AV_BG = [
@@ -555,12 +555,12 @@ const DonutSVG = ({ segs, size = 140, stroke = 22 }) => {
   let off = 0;
   return (
     <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none"
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke="rgba(255,255,255,0.04)" strokeWidth={stroke} />
       {segs.map((s, i) => {
         const dash = (s.pct / 100) * c;
         const el = (
-          <circle key={i} cx={size/2} cy={size/2} r={r}
+          <circle key={i} cx={size / 2} cy={size / 2} r={r}
             fill="none" stroke={s.color} strokeWidth={stroke}
             strokeDasharray={`${dash} ${c - dash}`}
             strokeDashoffset={-off} />
@@ -572,64 +572,73 @@ const DonutSVG = ({ segs, size = 140, stroke = 22 }) => {
   );
 };
 
-const DAYS    = ['M','T','W','T','F','S','S'];
+const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const ACTIVITY = [38, 62, 51, 78, 45, 29, 70];
-const maxA     = Math.max(...ACTIVITY);
+const maxA = Math.max(...ACTIVITY);
 const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
 const CARDS = [
-  { key: 'projects',    label: 'Projects',    icon: '◇', accent: '#00d4ff', bg: 'rgba(0,212,255,0.1)',   border: 'rgba(0,212,255,0.18)',  delta: 'portfolio', pct: 72 },
-  { key: 'skills',      label: 'Skills',      icon: '◉', accent: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.18)', delta: 'listed',    pct: 85 },
-  { key: 'experiences', label: 'Experiences', icon: '◎', accent: '#f472b6', bg: 'rgba(244,114,182,0.1)',border: 'rgba(244,114,182,0.18)',delta: 'history',   pct: 60 },
-  { key: 'messages',    label: 'Messages',    icon: '◻', accent: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.18)', delta: 'unread',    pct: 0  },
+  { key: 'projects', label: 'Projects', icon: '◇', accent: '#00d4ff', bg: 'rgba(0,212,255,0.1)', border: 'rgba(0,212,255,0.18)', delta: 'portfolio', pct: 72 },
+  { key: 'skills', label: 'Skills', icon: '◉', accent: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.18)', delta: 'listed', pct: 85 },
+  { key: 'experiences', label: 'Experiences', icon: '◎', accent: '#f472b6', bg: 'rgba(244,114,182,0.1)', border: 'rgba(244,114,182,0.18)', delta: 'history', pct: 60 },
+  { key: 'messages', label: 'Messages', icon: '◻', accent: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.18)', delta: 'unread', pct: 0 },
 ];
 
 const ACTIONS = [
-  { title: 'New Project',    desc: 'Add to portfolio',     icon: '◇', color: '#00d4ff', bg: 'rgba(0,212,255,0.1)',   d: '0.1s'  },
-  { title: 'Add Skill',      desc: 'Expand skill set',     icon: '◉', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', d: '0.14s' },
-  { title: 'New Experience', desc: 'Log work history',     icon: '◎', color: '#f472b6', bg: 'rgba(244,114,182,0.1)',d: '0.18s' },
-  { title: 'Edit About',     desc: 'Update bio & profile', icon: '◐', color: '#10d9a8', bg: 'rgba(16,217,168,0.1)', d: '0.22s' },
-  { title: 'View Messages',  desc: 'Read submissions',     icon: '◻', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', d: '0.26s' },
-  { title: 'Update Contact', desc: 'Social links & info',  icon: '◑', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)',d: '0.3s'  },
+  { title: 'New Project', desc: 'Add to portfolio', icon: '◇', color: '#00d4ff', bg: 'rgba(0,212,255,0.1)', d: '0.1s' },
+  { title: 'Add Skill', desc: 'Expand skill set', icon: '◉', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', d: '0.14s' },
+  { title: 'New Experience', desc: 'Log work history', icon: '◎', color: '#f472b6', bg: 'rgba(244,114,182,0.1)', d: '0.18s' },
+  { title: 'Edit About', desc: 'Update bio & profile', icon: '◐', color: '#10d9a8', bg: 'rgba(16,217,168,0.1)', d: '0.22s' },
+  { title: 'View Messages', desc: 'Read submissions', icon: '◻', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', d: '0.26s' },
+  { title: 'Update Contact', desc: 'Social links & info', icon: '◑', color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', d: '0.3s' },
 ];
 
 // ── Component ──────────────────────────────────────────────────
 const Dashboard = () => {
-  const [data,    setData]    = useState(null);
-  const [msgs,    setMsgs]    = useState([]);
+  const [data, setData] = useState(null);
+  const [msgs, setMsgs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [period,  setPeriod]  = useState('7D');
+  const [period, setPeriod] = useState('7D');
 
   useEffect(() => {
     (async () => {
       try {
-        const [projects, skills, experiences, messages] = await Promise.all([
+        const [projects, skills, experiences, messages] = await Promise.allSettled([
           getAllProjects(), getAllSkills(), getAllExperiences(), getAllMessages(),
         ]);
+
+        const p = projects.status === 'fulfilled' ? projects.value : [];
+        const s = skills.status === 'fulfilled' ? skills.value : [];
+        const e = experiences.status === 'fulfilled' ? experiences.value : [];
+        const m = messages.status === 'fulfilled' ? messages.value : [];
+
         setData({
-          projects:    projects?.length    || 0,
-          skills:      skills?.length      || 0,
-          experiences: experiences?.length || 0,
-          messages:    messages?.length    || 0,
-          unread:      (messages || []).filter(m => !m.read).length,
+          projects: p?.length || 0,
+          skills: s?.length || 0,
+          experiences: e?.length || 0,
+          messages: m?.length || 0,
+          unread: m.filter(msg => !msg.read).length,
         });
-        setMsgs([...(messages || [])].sort((a,b) => toMs(b.timestamp)-toMs(a.timestamp)).slice(0,8));
-      } catch(e) { console.error(e); }
-      finally    { setLoading(false); }
+        setMsgs([...m].sort((a, b) => toMs(b.timestamp) - toMs(a.timestamp)).slice(0, 8));
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 
   const total = data ? data.projects + data.skills + data.experiences : 0;
   const donut = data ? [
-    { label: 'Projects',    pct: total ? Math.round(data.projects/total*100)    : 0, color: '#00d4ff' },
-    { label: 'Skills',      pct: total ? Math.round(data.skills/total*100)      : 0, color: '#8b5cf6' },
-    { label: 'Experiences', pct: total ? Math.round(data.experiences/total*100) : 0, color: '#f472b6' },
+    { label: 'Projects', pct: total ? Math.round(data.projects / total * 100) : 0, color: '#00d4ff' },
+    { label: 'Skills', pct: total ? Math.round(data.skills / total * 100) : 0, color: '#8b5cf6' },
+    { label: 'Experiences', pct: total ? Math.round(data.experiences / total * 100) : 0, color: '#f472b6' },
   ] : [];
 
   const cards = CARDS.map(c => ({
     ...c,
     delta: c.key === 'messages' ? (data ? `${data.unread} unread` : '—') : c.delta,
-    pct:   c.key === 'messages' ? (data ? Math.round((data.unread/Math.max(data.messages,1))*100) : 0) : c.pct,
+    pct: c.key === 'messages' ? (data ? Math.round((data.unread / Math.max(data.messages, 1)) * 100) : 0) : c.pct,
   }));
 
   return (
@@ -640,7 +649,7 @@ const Dashboard = () => {
         {/* ── Stats ── */}
         <StatsGrid>
           {cards.map((c, i) => (
-            <StatCard key={c.key} $a={c.accent} $d={`${i*0.07}s`}>
+            <StatCard key={c.key} $a={c.accent} $d={`${i * 0.07}s`}>
               <CardTop>
                 <IconBox $bg={c.bg} $border={c.border}>{c.icon}</IconBox>
                 <Chip $c={c.accent}>{c.delta}</Chip>
@@ -648,7 +657,7 @@ const Dashboard = () => {
 
               {loading
                 ? <Skel h="44px" w="50%" />
-                : <StatVal $d={`${i*0.07+0.1}s`}>{data?.[c.key] ?? 0}</StatVal>
+                : <StatVal $d={`${i * 0.07 + 0.1}s`}>{data?.[c.key] ?? 0}</StatVal>
               }
 
               <StatLbl>{c.label}</StatLbl>
@@ -668,8 +677,8 @@ const Dashboard = () => {
             <PanelHead>
               <PanelTitle>Weekly Activity</PanelTitle>
               <PeriodChips>
-                {['7D','30D','90D'].map(p => (
-                  <PeriodChip key={p} $a={period===p} onClick={() => setPeriod(p)}>{p}</PeriodChip>
+                {['7D', '30D', '90D'].map(p => (
+                  <PeriodChip key={p} $a={period === p} onClick={() => setPeriod(p)}>{p}</PeriodChip>
                 ))}
               </PeriodChips>
             </PanelHead>
@@ -678,7 +687,7 @@ const Dashboard = () => {
               {ACTIVITY.map((v, i) => (
                 <BarCol key={i}>
                   <BarOuter>
-                    <BarInner $h={(v/maxA)*100} $today={i===todayIdx} />
+                    <BarInner $h={(v / maxA) * 100} $today={i === todayIdx} />
                   </BarOuter>
                   <BarLbl>{DAYS[i]}</BarLbl>
                 </BarCol>
@@ -687,9 +696,9 @@ const Dashboard = () => {
 
             <MetricsRow>
               {[
-                { lbl: 'avg / day', val: '53',  c: '#00d4ff' },
-                { lbl: 'peak',      val: '78',  c: '#8b5cf6' },
-                { lbl: 'total',     val: '371', c: '#f472b6' },
+                { lbl: 'avg / day', val: '53', c: '#00d4ff' },
+                { lbl: 'peak', val: '78', c: '#8b5cf6' },
+                { lbl: 'total', val: '371', c: '#f472b6' },
               ].map(m => (
                 <Metric key={m.lbl}>
                   <MetricLbl>{m.lbl}</MetricLbl>
@@ -704,7 +713,7 @@ const Dashboard = () => {
             <PanelTitle>Content Split</PanelTitle>
             <DonutWrap>
               {loading
-                ? <Skel h="140px" w="140px" style={{ borderRadius:'50%' }} />
+                ? <Skel h="140px" w="140px" style={{ borderRadius: '50%' }} />
                 : <DonutSVG segs={donut} />
               }
               <DonutCenter>
@@ -740,37 +749,37 @@ const Dashboard = () => {
             </PanelHead>
             <FeedScroll>
               {loading
-                ? [...Array(4)].map((_,i) => (
-                    <div key={i} style={{display:'flex',gap:10,padding:'9px 10px'}}>
-                      <Skel h="30px" w="30px" style={{borderRadius:8,flexShrink:0}} />
-                      <div style={{flex:1,display:'flex',flexDirection:'column',gap:5}}>
-                        <Skel h="10px" w="35%" />
-                        <Skel h="9px"  w="70%" />
-                      </div>
+                ? [...Array(4)].map((_, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '9px 10px' }}>
+                    <Skel h="30px" w="30px" style={{ borderRadius: 8, flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+                      <Skel h="10px" w="35%" />
+                      <Skel h="9px" w="70%" />
                     </div>
-                  ))
+                  </div>
+                ))
                 : msgs.length > 0
-                  ? msgs.map((m,i) => (
-                      <FeedRow key={m.id} $d={`${i*0.04}s`}>
-                        <FeedAv $bg={AV_BG[i % AV_BG.length]}>
-                          {(m.name || '?')[0].toUpperCase()}
-                        </FeedAv>
-                        <FeedBody>
-                          <FeedName>
-                            {m.name}
-                            {!m.read && <UnreadDot />}
-                          </FeedName>
-                          <FeedText>{m.message}</FeedText>
-                          <FeedMeta>{timeAgo(m.timestamp)} · {m.email}</FeedMeta>
-                        </FeedBody>
-                      </FeedRow>
-                    ))
+                  ? msgs.map((m, i) => (
+                    <FeedRow key={m.id} $d={`${i * 0.04}s`}>
+                      <FeedAv $bg={AV_BG[i % AV_BG.length]}>
+                        {(m.name || '?')[0].toUpperCase()}
+                      </FeedAv>
+                      <FeedBody>
+                        <FeedName>
+                          {m.name}
+                          {!m.read && <UnreadDot />}
+                        </FeedName>
+                        <FeedText>{m.message}</FeedText>
+                        <FeedMeta>{timeAgo(m.timestamp)} · {m.email}</FeedMeta>
+                      </FeedBody>
+                    </FeedRow>
+                  ))
                   : <Empty>// no messages yet</Empty>
               }
             </FeedScroll>
           </Panel>
 
-          
+
 
         </BottomRow>
 
