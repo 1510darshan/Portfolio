@@ -1,236 +1,406 @@
-# Darshan Walhe — Portfolio
+# Darshan Walhe — Full-Stack Developer Portfolio
 
-A full-stack developer portfolio featuring a dark-themed animated UI, Firebase-backed content management, and a complete admin panel for managing portfolio content without touching code.
+A modern, dynamic developer portfolio built with **React 19 + Vite** on the frontend and **Node.js + Express** on the backend, powered by **Firebase Firestore** as the database and **Firebase Auth** for admin authentication. All portfolio content (projects, skills, experience, about info) is managed dynamically through a built-in **Admin Panel** — no code changes needed to update your portfolio.
+
+---
+
+## 🌐 Live Demo
+
+> Deploy your own and update this link: `https://your-portfolio.onrender.com`
+
+---
+
+## 📸 Preview
+
+| Section | Description |
+|---------|-------------|
+| Hero | Animated profile image, tagline, CTA buttons |
+| About | Bio, stat cards, skill tags |
+| Projects | Compact cards with click-to-expand modal + dynamic filters |
+| Skills | Categorized skill grid with FontAwesome icons + proficiency levels |
+| Experience | Animated timeline + Education + Certifications tabs |
+| Contact | Contact form that saves to Firestore |
+| Admin | Full CRUD admin panel at `/admin` |
 
 ---
 
 ## Tech Stack
 
 ### Frontend
-- **React 19** with Vite
-- **React Router v7** — client-side routing
-- **Styled Components** — component-level CSS-in-JS with animations
-- **Tailwind CSS v4** — utility-first CSS (postcss)
-- **FontAwesome** — icons (solid + brands)
-- **Firebase JS SDK v12** — client-side data fetching
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.x | UI framework |
+| Vite | 7.x | Build tool & dev server |
+| styled-components | 6.x | CSS-in-JS styling |
+| React Router DOM | 7.x | Client-side routing |
+| FontAwesome | 7.x | Skill icons |
 
 ### Backend
-- **Express.js** — REST API server
-- **Firebase Admin SDK v12** — server-side Firestore access
-- **JWT (jsonwebtoken)** — admin authentication
-- **CORS**, **dotenv** — middleware and env config
-
-### Database
-- **Firebase Firestore** — stores projects, skills, experiences, about-me, and messages
+| Technology | Version | Purpose |
+|---|---|---|
+| Node.js | 18+ | Runtime |
+| Express | 4.x | REST API server |
+| Firebase Firestore | 12.x | NoSQL database |
+| Firebase Auth | 12.x | Admin authentication |
+| JSON Web Token | 9.x | Session management |
+| dotenv | 16.x | Environment config |
+| cors | 2.x | Cross-origin requests |
 
 ---
 
 ## Project Structure
 
 ```
-portfolio/
-├── frontend/                  # React SPA (Vite)
+Portfolio/
+├── frontend/                         # React + Vite app
+│   ├── public/
+│   │   └── background.png            # Hero background image
 │   ├── src/
 │   │   ├── components/
-│   │   │   └── Navbar.jsx     # Sticky navigation bar
+│   │   │   └── Navbar.jsx            # Sticky navigation bar
 │   │   ├── pages/
-│   │   │   ├── Hero/          # Landing hero section
-│   │   │   ├── About/         # About section
-│   │   │   ├── Projects/      # Filterable project showcase
-│   │   │   ├── Skills/        # Skills section
-│   │   │   ├── Experience/    # Work experience timeline
-│   │   │   ├── Contact/       # Contact form
-│   │   │   └── Admin/         # Admin panel + managers
-│   │   │       └── managers/  # Dashboard, ProjectsManager, SkillsManager, ...
-│   │   │       └── AdminLogin.jsx
+│   │   │   ├── Hero/Hero.jsx         # Landing section with profile image
+│   │   │   ├── About/About.jsx       # Bio, stats, tags
+│   │   │   ├── Projects/Projects.jsx # Cards + modal + dynamic filters
+│   │   │   ├── Skills/Skills.jsx     # Skill grid with FA icons
+│   │   │   ├── Experience/Experience.jsx  # Timeline, Education, Certifications
+│   │   │   ├── Contact/Contact.jsx   # Contact form
+│   │   │   └── Admin/
+│   │   │       ├── Admin.jsx                      # Admin panel with tabs
+│   │   │       ├── AdminLogin.jsx                 # Firebase Auth login
+│   │   │       └── managers/
+│   │   │           ├── Dashboard.jsx              # Stats overview
+│   │   │           ├── ProjectsManager.jsx        # Projects CRUD
+│   │   │           ├── SkillsManager.jsx          # Skills CRUD
+│   │   │           ├── ExperiencesManager.jsx     # Experience CRUD
+│   │   │           ├── MessagesManager.jsx        # View contact messages
+│   │   │           ├── AboutManager.jsx           # Edit about info
+│   │   │           └── ContactManager.jsx         # Contact settings
 │   │   ├── Services/
-│   │   │   ├── Api.js         # All API calls (CRUD for all entities)
-│   │   │   ├── FetchData.js
-│   │   │   └── ManageData.js
-│   │   ├── App.jsx            # Router setup
-│   │   └── main.jsx           # React entry point
-│   ├── index.html
-│   ├── .env.example
+│   │   │   ├── Api.js           # All REST API calls (named exports)
+│   │   │   ├── FetchData.js     # useFirebase + useSendMessage hooks
+│   │   │   └── ManageData.js    # Admin CRUD API calls
+│   │   ├── App.jsx              # Router: / and /admin routes
+│   │   └── main.jsx
+│   ├── vite.config.js
 │   └── package.json
 │
-└── backend/                   # Express API
+└── backend/                          # Express API server
+    ├── dist/                         # Built React frontend (served statically)
     ├── src/
-    │   ├── config/
-    │   │   └── firebase.js    # Firebase Admin initialization
-    │   ├── middleware/
-    │   │   └── auth.js        # JWT token generation/verification
-    │   ├── routes/
-    │   │   ├── projects.js    # GET /projects, GET /projects/:category
-    │   │   ├── skills.js      # GET /skills, GET /skills/:category
-    │   │   ├── experiences.js # GET /experiences
-    │   │   ├── messages.js    # POST /messages (contact form)
-    │   │   ├── about.js       # GET /about
-    │   │   └── admin.js       # Auth + full CRUD (protected)
-    │   └── index.js           # Express app entry
-    ├── .env.example
+    │   ├── index.js                  # Entry point + static file serving
+    │   ├── config/firebase.js        # Firestore + Auth init (exports db, auth)
+    │   ├── middleware/auth.js        # JWT authenticateToken + generateToken
+    │   └── routes/
+    │       ├── projects.js           # GET /api/projects
+    │       ├── skills.js             # GET /api/skills
+    │       ├── experiences.js        # GET /api/experiences
+    │       ├── about.js              # GET /api/about
+    │       ├── messages.js           # POST /api/messages
+    │       └── admin.js              # Login + protected CRUD routes
     └── package.json
 ```
 
 ---
 
-## Features
+## API Reference
 
-### Public Portfolio Site
-- **Hero Section** — animated avatar with orbiting rings, name, tagline, and CTA buttons
-- **About** — bio section with profile image and personal description
-- **Projects** — filterable grid (by category) with modal detail view, live/GitHub links
-- **Skills** — categorized skill badges with visual indicators
-- **Experience** — timeline-style work history
-- **Contact** — send messages directly from the site (stored in Firestore)
-- Responsive design with mobile-first breakpoints
-
-### Admin Panel (`/admin`)
-- JWT-based login via Firebase Authentication
-- Protected routes — unauthenticated users see only the login screen
-- Separate management tabs for: Projects, Skills, Experiences, About, Contact info, Messages
-- Full CRUD — create, read, update, delete all content entities
-- Unread message badge counter
-
----
-
-## API Endpoints
-
-### Public
+### Public Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/projects` | List all projects |
-| GET | `/api/projects/:category` | Filter projects by category |
-| GET | `/api/skills` | List all skills |
-| GET | `/api/skills/:category` | Filter skills by category |
-| GET | `/api/experiences` | List all experiences |
-| GET | `/api/about` | Get about-me content |
-| POST | `/api/messages` | Submit a contact message |
+| `GET` | `/api/projects` | Get all projects |
+| `GET` | `/api/projects/:category` | Get projects by category |
+| `GET` | `/api/skills` | Get all skills |
+| `GET` | `/api/skills/:category` | Get skills by category |
+| `GET` | `/api/experiences` | Get all experiences |
+| `GET` | `/api/about` | Get about info |
+| `POST` | `/api/messages` | Submit contact form message |
+| `GET` | `/health` | Server health check |
 
-### Admin (authenticated)
+### Admin Endpoints (JWT Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/admin/login` | Admin login |
-| POST | `/api/admin/projects` | Create project |
-| PUT | `/api/admin/projects/:id` | Update project |
-| DELETE | `/api/admin/projects/:id` | Delete project |
-| POST | `/api/admin/skills` | Create skill |
-| PUT | `/api/admin/skills/:id` | Update skill |
-| DELETE | `/api/admin/skills/:id` | Delete skill |
-| POST | `/api/admin/experiences` | Create experience |
-| PUT | `/api/admin/experiences/:id` | Update experience |
-| DELETE | `/api/admin/experiences/:id` | Delete experience |
-| PUT | `/api/admin/about` | Update about-me |
-| GET | `/api/admin/messages` | List all messages |
-| PUT | `/api/admin/messages/:id/read` | Mark message as read |
-| DELETE | `/api/admin/messages/:id` | Delete message |
+| `POST` | `/api/admin/login` | Login with email + password → JWT |
+| `POST` | `/api/admin/projects` | Create project |
+| `PUT` | `/api/admin/projects/:id` | Update project |
+| `DELETE` | `/api/admin/projects/:id` | Delete project |
+| `POST` | `/api/admin/skills` | Create skill |
+| `PUT` | `/api/admin/skills/:id` | Update skill |
+| `DELETE` | `/api/admin/skills/:id` | Delete skill |
+| `POST` | `/api/admin/experiences` | Create experience |
+| `PUT` | `/api/admin/experiences/:id` | Update experience |
+| `DELETE` | `/api/admin/experiences/:id` | Delete experience |
+| `PUT` | `/api/admin/about` | Update about info |
+| `GET` | `/api/admin/messages` | Get all contact messages |
+| `PUT` | `/api/admin/messages/:id/read` | Mark message as read |
+| `DELETE` | `/api/admin/messages/:id` | Delete message |
 
 ---
 
-## Firestore Collections
+## Firebase Firestore Collections
 
-| Collection | Fields | Purpose |
-|------------|--------|---------|
-| `Projects` | name, type, desc, tech[], image, live, github, category, status, accent | Portfolio projects |
-| `Skills` | name, category, level | Technical skills |
-| `Experience` | company, role, period, desc | Work history |
-| `AboutMe` | name, title, desc, profileImage | About section (single doc `profile`) |
-| `Messages` | name, email, message, read | Contact form submissions |
-
----
-
-## Setup
-
-### 1. Clone and install
-
-```bash
-git clone <repo-url>
-cd portfolio
-cd frontend && npm install
-cd ../backend && npm install
+```
+Firestore Database
+├── Projects/           # Portfolio projects
+├── Skills/             # Technical skills
+├── Experience/         # Work experience
+├── AboutMe/
+│   └── profile         # Single document for about info
+└── Messages/           # Contact form submissions
 ```
 
-### 2. Firebase project
+### Data Schemas
 
-1. Create a project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable **Firestore Database** (start in test mode for development)
+<details>
+<summary><b>Projects</b></summary>
+
+```js
+{
+  name: "Project Name",
+  category: "Fullstack,Frontend",   // comma-separated for multi-category
+  desc: "Project description...",
+  tech: ["React", "Node.js"],        // array
+  type: "Web",
+  accent: "#22d3ee",                 // hex color for card theming
+  status: "Completed",
+  live: "https://...",               // optional
+  github: "https://github.com/...",  // optional
+  image: "https://..."               // optional image URL
+}
+```
+</details>
+
+<details>
+<summary><b>Skills</b></summary>
+
+```js
+{
+  name: "React",
+  category: "Frontend",
+  level: 90,               // 0–100 proficiency
+  color: "#22d3ee",
+  icon: { prefix: "fab", name: "react" },  // FontAwesome icon object
+  featured: true,          // show in skill rings on hero
+  order: 1                 // display priority
+}
+```
+</details>
+
+<details>
+<summary><b>Experience</b></summary>
+
+```js
+{
+  role: "Senior Frontend Developer",
+  company: "TechCorp",
+  type: "Full-time",               // optional — omit to hide dot separator
+  date: "Aug 2024 — Present",      // supports "MMM YYYY — Present" format
+  current: true,                   // floats to top of timeline
+  desc: "Description of role...",
+  tags: ["React", "Node.js"]       // array of skills
+}
+```
+</details>
+
+<details>
+<summary><b>AboutMe → profile</b></summary>
+
+```js
+{
+  name: "Your Name",
+  title: "Full-Stack Developer",
+  bio: "...",
+  profileImage: "https://...",
+  email: "...",
+  github: "https://github.com/...",
+  linkedin: "https://linkedin.com/..."
+}
+```
+</details>
+
+---
+
+## ⚙️ Local Development Setup
+
+### Prerequisites
+- Node.js 18+
+- npm
+- A Firebase project with Firestore + Email/Password Auth enabled
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/1510darshan/Portfolio.git
+cd Portfolio
+```
+
+### 2. Firebase Setup
+
+1. Go to [Firebase Console](https://console.firebase.google.com) → create or open your project
+2. Enable **Firestore Database** (start in test mode)
 3. Enable **Authentication** → Sign-in method → **Email/Password**
-4. Add a user (your admin account)
-5. Register a **Web App** and copy the config values
+4. Under Authentication → Users → **Add a user** (this will be your admin login)
+5. Go to Project Settings → Your apps → copy the Firebase config values
 
-### 3. Configure environment variables
-
-**Frontend** (`frontend/.env.local` — copy from `.env.example`):
-
-```env
-VITE_API_URL=http://localhost:3001
-```
-
-**Backend** (`backend/.env` — copy from `.env.example`):
-
-```env
-PORT=3001
-
-# Firebase Admin (from Firebase console → Project Settings → Service Accounts)
-apiKey=...
-authDomain=...
-databaseURL=...
-projectId=...
-storageBucket=...
-messagingSenderId=...
-appId=...
-measurementId=...
-
-# Admin credentials (Firebase Auth user email/password)
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=your-password
-```
-
-### 4. Run
+### 3. Backend Setup
 
 ```bash
-# Terminal 1 — backend
 cd backend
-npm run dev
-
-# Terminal 2 — frontend
-cd frontend
-npm run dev
+npm install
 ```
 
-Frontend runs at `http://localhost:5173`, backend at `http://localhost:3001`.
+Create `backend/.env`:
 
-### 5. Build for production
+```env
+# Server
+PORT=3000
+
+# Firebase Config (from Project Settings → Your apps)
+apiKey=AIzaSy...
+authDomain=your-project.firebaseapp.com
+databaseURL=https://your-project-default-rtdb.firebaseio.com
+projectId=your-project-id
+storageBucket=your-project.appspot.com
+messagingSenderId=123456789
+appId=1:123456789:web:abc123
+measurementId=G-XXXXXXX
+
+# JWT Secret (use a long random string)
+JWT_SECRET=your_super_secret_jwt_key_min_32_chars
+```
+
+Start the backend:
 
 ```bash
-cd frontend && npm run build
+npm run dev
+# → Server running on http://localhost:3000
 ```
 
-The built assets are served by the Express server from `backend/dist/`.
+### 4. Frontend Setup
+
+```bash
+cd frontend
+npm install
+```
+
+Create `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+# → App running on http://localhost:5173
+```
 
 ---
 
-## Admin Access
+## Production Build & Deployment
 
-1. Go to `/admin`
-2. Log in with the Firebase Auth email/password configured in `.env`
-3. A JWT is stored in `localStorage` and sent with all admin API requests
+### Step 1 — Build the React frontend
+
+```bash
+cd frontend
+npm run build
+# Output: frontend/dist/
+```
+
+### Step 2 — Copy dist to backend
+
+```bash
+# Windows
+xcopy /E /I frontend\dist backend\dist
+
+# Mac / Linux
+cp -r frontend/dist backend/dist
+```
+
+The Express server serves the React build from `backend/dist/` and handles client-side routing with a `GET *` catch-all — so React Router paths like `/admin` work correctly after a refresh.
+
+### Step 3 — Deploy to Render
+
+1. Push your code to GitHub (ensure `backend/dist` is committed or add a build step)
+2. Go to [Render](https://render.com) → **New Web Service**
+3. Connect your GitHub repo
+4. Configure the service:
+   - **Root Directory**: `backend`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+5. Add all environment variables from `backend/.env` in the Render Environment tab
+6. Click **Deploy** 🚀
 
 ---
 
-## Design System
+## Admin Panel
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| Primary accent | `#22d3ee` | Cyan — headings, highlights, borders |
-| Secondary accent | `#7b2fff` | Purple — gradients, tags |
-| Background | `#040d1a` | Near-black blue |
-| Surface | `rgba(10,26,46,0.7)` | Cards, modals |
-| Text primary | `white` | Headings |
-| Text muted | `rgba(255,255,255,0.45)` | Body, labels |
-| Font | Space Mono (monospace) | Code-like tags, labels |
+Navigate to `/admin` on your deployed site (e.g., `https://your-site.onrender.com/admin`).
+
+### Login
+- Uses **Firebase Email/Password Authentication**
+- Enter the email and password of the admin user you created in Firebase Console
+- A JWT token is stored in `localStorage` for session persistence (24h expiry)
+
+### Admin Panel Tabs
+
+| Tab | What you can do |
+|-----|----------------|
+| **Dashboard** | Live counts of projects, skills, experiences, unread messages |
+| **Projects** | Add / edit / delete projects — name, category, description, tech stack, accent color, image URL, live link, GitHub link |
+| **Skills** | Add / edit / delete skills — name, category, proficiency level (0–100), FontAwesome icon, featured flag, display order |
+| **Experience** | Add / edit / delete work experience — role, company, type, date range, description, skill tags, current job flag |
+| **Messages** | View contact form submissions, mark as read, delete |
+| **About** | Update bio, profile image URL, social links |
+
+---
+
+## Notable Features
+
+- **Dynamic category filters** on Projects — tabs are auto-generated from your data (no hardcoded values), supports comma-separated multi-category like `"Fullstack,Frontend,Backend"`
+- **Click-to-expand project cards** — compact grid with full detail modal on click; close with ✕ button, backdrop click, or `Escape` key
+- **Smart experience timeline sorting** — current positions always float to the top, then sorted by start date descending; parses date strings like `"Aug 2024 — Present"` automatically
+- **Skeleton loading states** — shimmer skeletons for every data-fetched section
+- **FontAwesome skill icons** — skills use real FA icons stored as `{ prefix: "fab", name: "react" }` objects in Firestore
+- **Single-server deployment** — backend serves both the REST API and the React frontend from `dist/`; one process, one port
+- **Graceful Firebase Auth error handling** — all known Firebase error codes (`auth/wrong-password`, `auth/too-many-requests`, etc.) return user-friendly messages
+
+---
+
+## Application Routes
+
+| Path | Component | Notes |
+|------|-----------|-------|
+| `/` | Full portfolio | Hero → About → Projects → Skills → Experience → Contact |
+| `/admin` | Admin panel | Shows `AdminLogin` if not authenticated, `Admin` dashboard if authenticated |
+
+---
+
+## Contributing
+
+This is a personal portfolio — feel free to fork and customise for your own use!
+
+1. Fork the repo
+2. Create your feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m 'Add my feature'`
+4. Push to the branch: `git push origin feature/my-feature`
+5. Open a Pull Request
 
 ---
 
 ## License
 
-MIT
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## Author
+
+**Darshan Walhe**
+
+<img width="1912" height="969" alt="image" src="https://github.com/user-attachments/assets/7e4d00bc-8fe3-4676-917c-ce319f527f62" />
+
+---
+
+> Built with ❤️ using React 19, Node.js, Express, and Firebase
