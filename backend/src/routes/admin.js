@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
 });
 
 // All admin routes below require authentication
-// router.use(authenticateToken);
+router.use(authenticateToken);
 
 // ── Projects ──────────────────────────────────────────────────
 router.post('/projects', async (req, res) => {
