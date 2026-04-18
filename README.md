@@ -399,7 +399,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 **Darshan Walhe**
 
-[![GitHub](<img width="1912" height="969" alt="image" src="https://github.com/user-attachments/assets/7e4d00bc-8fe3-4676-917c-ce319f527f62" />)
+(<img width="1912" height="969" alt="image" src="https://github.com/user-attachments/assets/7e4d00bc-8fe3-4676-917c-ce319f527f62" />)
 
 ---
 
