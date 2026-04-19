@@ -8,6 +8,8 @@ import experiencesRouter from './routes/experiences.js';
 import messagesRouter from './routes/messages.js';
 import aboutRouter from './routes/about.js';
 import adminRouter from './routes/admin.js';
+import education from './routes/education.js';
+import certifications from './routes/certifications.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +31,8 @@ app.use('/api/skills', skillsRouter);
 app.use('/api/experiences', experiencesRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/about', aboutRouter);
+app.use('/api/education', education);
+app.use('/api/certifications', certifications);
 
 // Admin Routes (protected)
 app.use('/api/admin', adminRouter);

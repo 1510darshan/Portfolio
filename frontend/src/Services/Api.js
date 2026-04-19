@@ -432,7 +432,7 @@ export const deleteEducation = async (id) => {
 
 export const getAllCertifications = async () => {
   try {
-    const res = await fetch(`${API_URL}/api/certifications`);
+    const res = await fetch(`${API_URL}/api/education`);
     return await handleResponse(res, 'Failed to fetch certifications');
   } catch (error) {
     console.error('getAllCertifications error:', error);
