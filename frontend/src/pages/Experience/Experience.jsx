@@ -505,6 +505,8 @@ const Experience = () => {
   const { data: eduList,   loading: eduLoading   } = useFirebase('education');
   const { data: certList,  loading: certLoading  } = useFirebase('certifications');
 
+  
+
   const tabs = ['Experience', 'Education', 'Certifications'];
 
   const sortedExperiences = useMemo(() => sortExperiences(expList), [expList]);

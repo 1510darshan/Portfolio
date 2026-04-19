@@ -35,6 +35,12 @@ export const useFirebase = (dataType, category = null) => {
                     case 'experiences':
                         result = await Api.getAllExperiences();
                         break;
+                    case 'education':
+                        result = await Api.getAllEducation();
+                        break;
+                    case 'certifications':
+                        result = await Api.getAllCertifications();
+                        break;
                     case 'aboutMe':
                         result = await Api.getAboutMe();
                         break;
