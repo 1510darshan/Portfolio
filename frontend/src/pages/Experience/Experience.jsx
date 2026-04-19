@@ -5,20 +5,30 @@ import { useFirebase } from '../../Services/FetchData';
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 `;
 
 const pulseDot = keyframes`
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.4); opacity: 0.6; }
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
 `;
 
 const glowLine = keyframes`
   0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
+  50%       { opacity: 0.8; }
 `;
 
-// ── Styled Components ────────────────────────────────────────
+const shimmer = keyframes`
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+`;
+
+const shimmerPulse = keyframes`
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
+`;
+
+// ── Layout ───────────────────────────────────────────────────
 const ExperienceContainer = styled.section`
   width: 100%;
   min-height: 100vh;
@@ -63,10 +73,11 @@ const SectionTitle = styled.h2`
   }
 `;
 
-// ── Tab Switch ───────────────────────────────────────────────
+// ── Tabs ─────────────────────────────────────────────────────
 const TabRow = styled.div`
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 `;
 
 const Tab = styled.button`
@@ -88,25 +99,15 @@ const Tab = styled.button`
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
     background: rgba(34,211,238,0.1);
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: -1;
   }
 
-  &:hover {
-    border-color: #22d3ee;
-    color: #22d3ee;
-    background: rgba(34,211,238,0.12);
-    transform: translateY(-2px);
-  }
-
-  &:hover::before {
-    left: 100%;
-  }
+  &:hover { border-color: #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.12); transform: translateY(-2px); }
+  &:hover::before { left: 100%; }
 `;
 
 // ── Timeline ─────────────────────────────────────────────────
@@ -114,21 +115,14 @@ const TimelineWrap = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0;
 `;
 
 const TimelineLine = styled.div`
   position: absolute;
   left: 19px;
-  top: 0;
-  bottom: 0;
+  top: 0; bottom: 0;
   width: 2px;
-  background: linear-gradient(
-    180deg,
-    #22d3ee 0%,
-    #7b2fff 50%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg, #22d3ee 0%, #7b2fff 50%, transparent 100%);
   animation: ${glowLine} 3s ease-in-out infinite;
 `;
 
@@ -138,21 +132,16 @@ const TimelineItem = styled.div`
   gap: 32px;
   padding-left: 60px;
   padding-bottom: 48px;
-
-  &:last-child {
-    padding-bottom: 0;
-  }
+  &:last-child { padding-bottom: 0; }
 `;
 
 const DotWrap = styled.div`
   position: absolute;
-  left: 0;
-  top: 4px;
+  left: 0; top: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
 `;
 
 const Dot = styled.div`
@@ -165,12 +154,11 @@ const Dot = styled.div`
   animation: ${({ $current }) => $current ? pulseDot : 'none'} 2s ease-in-out infinite;
 `;
 
-const Card = styled.div`
+const ExpCard = styled.div`
   flex: 1;
   padding: 28px 32px;
-  background: rgba(10, 26, 46, 0.6);
-  border: 1px solid ${({ $current }) =>
-    $current ? 'rgba(123,47,255,0.3)' : 'rgba(34,211,238,0.15)'};
+  background: rgba(10,26,46,0.6);
+  border: 1px solid ${({ $current }) => $current ? 'rgba(123,47,255,0.3)' : 'rgba(34,211,238,0.15)'};
   border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
@@ -179,27 +167,23 @@ const Card = styled.div`
 
   &::before {
     content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, ${({ $current }) =>
-    $current ? 'rgba(123,47,255,0.1)' : 'rgba(34,211,238,0.08)'}, transparent);
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg,
+      ${({ $current }) => $current ? 'rgba(123,47,255,0.1)' : 'rgba(34,211,238,0.08)'},
+      transparent);
     opacity: 0;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
   }
 
   &:hover {
-    border-color: ${({ $current }) =>
-    $current ? 'rgba(123,47,255,0.5)' : 'rgba(34,211,238,0.35)'};
-    box-shadow: 0 8px 28px ${({ $current }) =>
-    $current ? 'rgba(123,47,255,0.15)' : 'rgba(34,211,238,0.12)'}, 0 4px 12px rgba(0, 0, 0, 0.24);
+    border-color: ${({ $current }) => $current ? 'rgba(123,47,255,0.5)' : 'rgba(34,211,238,0.35)'};
+    box-shadow: 0 8px 28px ${({ $current }) => $current ? 'rgba(123,47,255,0.15)' : 'rgba(34,211,238,0.12)'};
     transform: translateY(-4px);
-    background: rgba(10, 26, 46, 0.8);
+    background: rgba(10,26,46,0.8);
   }
 
-  &:hover::before {
-    opacity: 1;
-  }
+  &:hover::before { opacity: 1; }
 `;
 
 const CardTop = styled.div`
@@ -235,6 +219,7 @@ const Company = styled.div`
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 `;
 
 const CompanyName = styled.span`
@@ -284,10 +269,25 @@ const Tag = styled.span`
   font-family: 'Space Mono', monospace;
   transition: all 0.2s ease;
 
-  ${Card}:hover & {
+  ${ExpCard}:hover & {
     border-color: rgba(34,211,238,0.2);
     color: rgba(255,255,255,0.65);
   }
+`;
+
+// ── Skeleton ─────────────────────────────────────────────────
+const SkeletonBlock = styled.div`
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.1)  50%,
+    rgba(255,255,255,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.6s infinite, ${shimmerPulse} 2s ease-in-out infinite;
+  height: ${({ h }) => h || '12px'};
+  width:  ${({ w }) => w || '100%'};
 `;
 
 // ── Education ─────────────────────────────────────────────────
@@ -295,15 +295,12 @@ const EduGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
 `;
 
 const EduCard = styled.div`
   padding: 24px;
-  background: rgba(10, 26, 46, 0.8);
+  background: rgba(10,26,46,0.8);
   border: 1px solid rgba(0,212,255,0.1);
   border-radius: 14px;
   display: flex;
@@ -319,8 +316,7 @@ const EduCard = styled.div`
 `;
 
 const EduIcon = styled.div`
-  width: 48px;
-  height: 48px;
+  width: 48px; height: 48px;
   border-radius: 10px;
   background: ${({ color }) => `${color}15`};
   border: 1px solid ${({ color }) => `${color}30`};
@@ -368,14 +364,13 @@ const CertGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-
   @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 600px) { grid-template-columns: 1fr; }
 `;
 
 const CertCard = styled.div`
   padding: 20px;
-  background: rgba(10, 26, 46, 0.7);
+  background: rgba(10,26,46,0.7);
   border: 1px solid ${({ color }) => `${color}22`};
   border-radius: 12px;
   display: flex;
@@ -414,82 +409,102 @@ const CertYear = styled.span`
   font-family: 'Space Mono', monospace;
 `;
 
-// ── Date parsing ──────────────────────────────────────────────
-// Handles formats like:
-//   "Aug 2024 — Present"
-//   "Jan 2022 — Dec 2023"
-//   "2021 — 2022"
-//   "Mar 2020"
+const CertLink = styled.a`
+  font-size: 0.7rem;
+  color: #22d3ee;
+  font-family: 'Space Mono', monospace;
+  text-decoration: none;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  &:hover { opacity: 1; }
+`;
 
+// ── Empty State ───────────────────────────────────────────────
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.35);
+  p:first-child { font-size: 1rem; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  p:last-child  { font-size: 0.85rem; }
+`;
+
+// ── Date Parsing & Sort ───────────────────────────────────────
 const MONTHS = {
-  jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-  jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+  jan:0, feb:1, mar:2, apr:3, may:4, jun:5,
+  jul:6, aug:7, sep:8, oct:9, nov:10, dec:11,
 };
 
 const parseMonthYear = (str) => {
   if (!str) return null;
   const s = str.trim().toLowerCase();
-
-  // "present" / "now" → today
   if (s === 'present' || s === 'now') return new Date();
-
-  // "MMM YYYY"  e.g. "aug 2024"
-  const monthYear = s.match(/^([a-z]{3})\s+(\d{4})$/);
-  if (monthYear) {
-    const m = MONTHS[monthYear[1]];
-    const y = parseInt(monthYear[2], 10);
-    if (m !== undefined && !isNaN(y)) return new Date(y, m, 1);
-  }
-
-  // "YYYY" only
-  const yearOnly = s.match(/^(\d{4})$/);
-  if (yearOnly) return new Date(parseInt(yearOnly[1], 10), 0, 1);
-
+  const my = s.match(/^([a-z]{3})\s+(\d{4})$/);
+  if (my) { const m = MONTHS[my[1]]; const y = parseInt(my[2], 10); if (m !== undefined && !isNaN(y)) return new Date(y, m, 1); }
+  const yo = s.match(/^(\d{4})$/);
+  if (yo) return new Date(parseInt(yo[1], 10), 0, 1);
   return null;
 };
 
-/**
- * Extract the START date from a range string like:
- *   "Aug 2024 — Present"   →  Aug 2024
- *   "Jan 2022 — Dec 2023"  →  Jan 2022
- *   "Mar 2020"             →  Mar 2020
- *
- * Returns a Date or null.
- */
 const parseStartDate = (dateStr) => {
   if (!dateStr) return null;
-
-  // Split on common range separators: —, –, -, "to"
   const parts = dateStr.split(/\s*[—–\-]|(?:\s+to\s+)/i);
-  const startStr = parts[0]?.trim();
-  return parseMonthYear(startStr);
+  return parseMonthYear(parts[0]?.trim());
 };
 
-// ── Sort experiences: current first, then by start date desc ──
 const sortExperiences = (list) => {
   if (!list || list.length === 0) return [];
   return [...list].sort((a, b) => {
-    // Current jobs always float to top
     if (a.current && !b.current) return -1;
     if (!a.current && b.current) return 1;
-
-    const dateA = parseStartDate(a.date);
-    const dateB = parseStartDate(b.date);
-
-    // Both have parseable dates → newest first
-    if (dateA && dateB) return dateB - dateA;
-
-    // Unparseable dates sink to bottom
-    if (dateA && !dateB) return -1;
-    if (!dateA && dateB) return 1;
+    const dA = parseStartDate(a.date), dB = parseStartDate(b.date);
+    if (dA && dB) return dB - dA;
+    if (dA && !dB) return -1;
+    if (!dA && dB) return 1;
     return 0;
   });
 };
 
+// ── Skeleton Cards ────────────────────────────────────────────
+const EduSkeleton = () => (
+  <EduGrid>
+    {[...Array(4)].map((_, i) => (
+      <EduCard key={i} style={{ pointerEvents: 'none' }}>
+        <SkeletonBlock h="48px" w="48px" style={{ borderRadius: '10px', flexShrink: 0 }} />
+        <EduInfo style={{ flex: 1 }}>
+          <SkeletonBlock h="14px" w="80%" />
+          <SkeletonBlock h="12px" w="60%" />
+          <SkeletonBlock h="10px" w="40%" />
+        </EduInfo>
+      </EduCard>
+    ))}
+  </EduGrid>
+);
+
+const CertSkeleton = () => (
+  <CertGrid>
+    {[...Array(6)].map((_, i) => (
+      <CertCard key={i} color="#22d3ee" style={{ pointerEvents: 'none' }}>
+        <SkeletonBlock h="28px" w="28px" style={{ borderRadius: '4px' }} />
+        <SkeletonBlock h="14px" w="85%" />
+        <SkeletonBlock h="10px" w="55%" />
+        <SkeletonBlock h="10px" w="35%" />
+      </CertCard>
+    ))}
+  </CertGrid>
+);
+
 // ── Component ────────────────────────────────────────────────
 const Experience = () => {
   const [activeTab, setActiveTab] = useState('Experience');
-  const { data: expList, loading } = useFirebase('experiences');
+
+  const { data: expList,   loading: expLoading   } = useFirebase('experiences');
+  const { data: eduList,   loading: eduLoading   } = useFirebase('education');
+  const { data: certList,  loading: certLoading  } = useFirebase('certifications');
+
   const tabs = ['Experience', 'Education', 'Certifications'];
 
   const sortedExperiences = useMemo(() => sortExperiences(expList), [expList]);
@@ -507,106 +522,116 @@ const Experience = () => {
         {/* Tabs */}
         <TabRow>
           {tabs.map(t => (
-            <Tab
-              key={t}
-              $active={activeTab === t ? 1 : 0}
-              onClick={() => setActiveTab(t)}
-            >
+            <Tab key={t} $active={activeTab === t ? 1 : 0} onClick={() => setActiveTab(t)}>
               {t}
             </Tab>
           ))}
         </TabRow>
 
-        {/* ── Experience Tab ── */}
+        {/* ── Experience ── */}
         {activeTab === 'Experience' && (
-          <>
-            {loading ? (
-              <TimelineWrap>
-                <TimelineLine />
-                {[...Array(3)].map((_, i) => (
-                  <TimelineItem key={i}>
-                    <DotWrap><Dot /></DotWrap>
-                    <Card style={{ opacity: 0.5 }}>
-                      <CardTop>
-                        <Role style={{ height: '20px', width: '40%', background: 'rgba(255,255,255,0.1)' }} />
-                      </CardTop>
-                      <Desc style={{ height: '40px', background: 'rgba(255,255,255,0.1)' }} />
-                    </Card>
-                  </TimelineItem>
-                ))}
-              </TimelineWrap>
-            ) : (
-              <TimelineWrap>
-                <TimelineLine />
-                {sortedExperiences.length > 0 ? (
-                  sortedExperiences.map((exp, i) => (
-                    <TimelineItem key={exp.id || i}>
-                      <DotWrap>
-                        <Dot $current={exp.current ? 1 : 0} />
-                      </DotWrap>
-                      <Card $current={exp.current ? 1 : 0}>
-                        <CardTop>
-                          <Role>{exp.role}</Role>
-                          <DateBadge>{exp.date}</DateBadge>
-                        </CardTop>
-                        <Company>
-                          <CompanyName $current={exp.current}>{exp.company}</CompanyName>
-                          {exp.type && <CompanyType>· {exp.type}</CompanyType>}
-                          {exp.current && <CurrentBadge>Current</CurrentBadge>}
-                        </Company>
-                        <Desc>{exp.desc}</Desc>
-                        <TagRow>
-                          {Array.isArray(exp.tags) && exp.tags.map(tag => (
-                            <Tag key={tag}>{tag}</Tag>
-                          ))}
-                        </TagRow>
-                      </Card>
-                    </TimelineItem>
-                  ))
-                ) : (
-                  <TimelineItem>
-                    <DotWrap><Dot /></DotWrap>
-                    <Card>
-                      <CardTop>
-                        <Role>No experience data found.</Role>
-                      </CardTop>
-                    </Card>
-                  </TimelineItem>
-                )}
-              </TimelineWrap>
-            )}
-          </>
+          expLoading ? (
+            <TimelineWrap>
+              <TimelineLine />
+              {[...Array(3)].map((_, i) => (
+                <TimelineItem key={i}>
+                  <DotWrap><Dot /></DotWrap>
+                  <ExpCard style={{ pointerEvents: 'none' }}>
+                    <CardTop>
+                      <SkeletonBlock h="18px" w="45%" />
+                      <SkeletonBlock h="24px" w="110px" style={{ borderRadius: '20px' }} />
+                    </CardTop>
+                    <SkeletonBlock h="14px" w="30%" style={{ marginBottom: 12 }} />
+                    <SkeletonBlock h="12px" style={{ marginBottom: 6 }} />
+                    <SkeletonBlock h="12px" w="80%" style={{ marginBottom: 6 }} />
+                    <SkeletonBlock h="12px" w="60%" />
+                  </ExpCard>
+                </TimelineItem>
+              ))}
+            </TimelineWrap>
+          ) : sortedExperiences.length > 0 ? (
+            <TimelineWrap>
+              <TimelineLine />
+              {sortedExperiences.map((exp, i) => (
+                <TimelineItem key={exp.id || i}>
+                  <DotWrap><Dot $current={exp.current ? 1 : 0} /></DotWrap>
+                  <ExpCard $current={exp.current ? 1 : 0}>
+                    <CardTop>
+                      <Role>{exp.role}</Role>
+                      {exp.date && <DateBadge>{exp.date}</DateBadge>}
+                    </CardTop>
+                    <Company>
+                      <CompanyName $current={exp.current}>{exp.company}</CompanyName>
+                      {exp.type    && <CompanyType>· {exp.type}</CompanyType>}
+                      {exp.current && <CurrentBadge>Current</CurrentBadge>}
+                    </Company>
+                    {exp.desc && <Desc>{exp.desc}</Desc>}
+                    {Array.isArray(exp.tags) && exp.tags.length > 0 && (
+                      <TagRow>{exp.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}</TagRow>
+                    )}
+                  </ExpCard>
+                </TimelineItem>
+              ))}
+            </TimelineWrap>
+          ) : (
+            <EmptyState>
+              <p>No experience data yet.</p>
+              <p>Add entries from the admin panel.</p>
+            </EmptyState>
+          )
         )}
 
-        {/* ── Education Tab ── */}
+        {/* ── Education ── */}
         {activeTab === 'Education' && (
-          <EduGrid>
-            {education.map((edu, i) => (
-              <EduCard key={i}>
-                <EduIcon color={edu.color}>{edu.icon}</EduIcon>
-                <EduInfo>
-                  <EduDegree>{edu.degree}</EduDegree>
-                  <EduSchool>{edu.school}</EduSchool>
-                  <EduYear>{edu.year}</EduYear>
-                  <EduGrade>{edu.grade}</EduGrade>
-                </EduInfo>
-              </EduCard>
-            ))}
-          </EduGrid>
+          eduLoading ? <EduSkeleton /> :
+          eduList && eduList.length > 0 ? (
+            <EduGrid>
+              {eduList.map((edu, i) => (
+                <EduCard key={edu.id || i}>
+                  <EduIcon color={edu.color || '#22d3ee'}>{edu.icon || '🎓'}</EduIcon>
+                  <EduInfo>
+                    <EduDegree>{edu.degree}</EduDegree>
+                    <EduSchool>{edu.school}</EduSchool>
+                    {edu.year  && <EduYear>{edu.year}</EduYear>}
+                    {edu.grade && <EduGrade>{edu.grade}</EduGrade>}
+                    {edu.field && <EduGrade style={{ color: 'rgba(255,255,255,0.5)' }}>{edu.field}</EduGrade>}
+                  </EduInfo>
+                </EduCard>
+              ))}
+            </EduGrid>
+          ) : (
+            <EmptyState>
+              <p>No education data yet.</p>
+              <p>Add entries from the admin panel.</p>
+            </EmptyState>
+          )
         )}
 
-        {/* ── Certifications Tab ── */}
+        {/* ── Certifications ── */}
         {activeTab === 'Certifications' && (
-          <CertGrid>
-            {certifications.map((cert, i) => (
-              <CertCard key={i} color={cert.color}>
-                <CertIcon>{cert.icon}</CertIcon>
-                <CertName>{cert.name}</CertName>
-                <CertIssuer color={cert.color}>{cert.issuer}</CertIssuer>
-                <CertYear>{cert.year}</CertYear>
-              </CertCard>
-            ))}
-          </CertGrid>
+          certLoading ? <CertSkeleton /> :
+          certList && certList.length > 0 ? (
+            <CertGrid>
+              {certList.map((cert, i) => (
+                <CertCard key={cert.id || i} color={cert.color || '#22d3ee'}>
+                  <CertIcon>{cert.icon || '🏆'}</CertIcon>
+                  <CertName>{cert.name}</CertName>
+                  <CertIssuer color={cert.color || '#22d3ee'}>{cert.issuer}</CertIssuer>
+                  {cert.year && <CertYear>{cert.year}</CertYear>}
+                  {cert.link && (
+                    <CertLink href={cert.link} target="_blank" rel="noopener noreferrer">
+                      View Certificate →
+                    </CertLink>
+                  )}
+                </CertCard>
+              ))}
+            </CertGrid>
+          ) : (
+            <EmptyState>
+              <p>No certifications yet.</p>
+              <p>Add entries from the admin panel.</p>
+            </EmptyState>
+          )
         )}
 
       </Inner>

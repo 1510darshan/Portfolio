@@ -194,4 +194,81 @@ router.delete('/messages/:id', async (req, res) => {
   }
 });
 
+
+
+// ── Add these imports at the top of your existing admin.js ───────────
+// (already have: collection, addDoc, doc, setDoc, deleteDoc, getDocs)
+// No new imports needed — same firebase/firestore methods are used.
+
+// ════════════════════════════════════════════════════════════════════
+//  PASTE THESE ROUTE BLOCKS INTO YOUR EXISTING admin.js
+//  Place them after the existing Experiences routes
+// ════════════════════════════════════════════════════════════════════
+
+// ── Education ──────────────────────────────────────────────────────
+router.post('/education', async (req, res) => {
+  try {
+    const docRef = await addDoc(collection(db, 'Education'), req.body);
+    res.json({ id: docRef.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/education/:id', async (req, res) => {
+  try {
+    await setDoc(doc(db, 'Education', req.params.id), req.body, { merge: true });
+    res.json({ message: 'Education updated' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/education/:id', async (req, res) => {
+  try {
+    await deleteDoc(doc(db, 'Education', req.params.id));
+    res.json({ message: 'Education deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ── Certifications ─────────────────────────────────────────────────
+router.post('/certifications', async (req, res) => {
+  try {
+    const docRef = await addDoc(collection(db, 'Certifications'), req.body);
+    res.json({ id: docRef.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/certifications/:id', async (req, res) => {
+  try {
+    await setDoc(doc(db, 'Certifications', req.params.id), req.body, { merge: true });
+    res.json({ message: 'Certification updated' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/certifications/:id', async (req, res) => {
+  try {
+    await deleteDoc(doc(db, 'Certifications', req.params.id));
+    res.json({ message: 'Certification deleted' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  REGISTER THE PUBLIC ROUTES in your main app/index.js:
+//
+//  import educationRouter      from './routes/education.js';
+//  import certificationsRouter from './routes/certifications.js';
+//
+//  app.use('/api/education',      educationRouter);
+//  app.use('/api/certifications', certificationsRouter);
+// ════════════════════════════════════════════════════════════════════
+
 export default router;

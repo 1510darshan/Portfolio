@@ -22,4 +22,12 @@ export {
   deleteMessage,
   uploadProjectImage,
   uploadProfileImage,
+  getAllEducation,
+  insertEducation,
+  updateEducation,
+  deleteEducation,
+  getAllCertifications,
+  insertCertification,
+  updateCertification,
+  deleteCertification,
 } from './Api';

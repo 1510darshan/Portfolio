@@ -363,3 +363,121 @@ export const getProfileImage = async () => {
     return null;
   }
 };
+
+
+// ════════════════════════════════════════════════════════════════════
+//  PASTE THESE INTO YOUR EXISTING ManageData.js / Api.js
+//  (keep the same API_URL and getAuthHeader / handleResponse already there)
+// ════════════════════════════════════════════════════════════════════
+
+// ==================================================================
+//                        Education
+// ==================================================================
+
+export const getAllEducation = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/education`);
+    return await handleResponse(res, 'Failed to fetch education');
+  } catch (error) {
+    console.error('getAllEducation error:', error);
+    throw error;
+  }
+};
+
+export const insertEducation = async (data) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/education`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    const result = await handleResponse(res, 'Failed to create education');
+    return result.id;
+  } catch (error) {
+    console.error('insertEducation error:', error);
+    throw error;
+  }
+};
+
+export const updateEducation = async (id, data) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/education/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    await handleResponse(res, 'Failed to update education');
+  } catch (error) {
+    console.error('updateEducation error:', error);
+    throw error;
+  }
+};
+
+export const deleteEducation = async (id) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/education/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    await handleResponse(res, 'Failed to delete education');
+  } catch (error) {
+    console.error('deleteEducation error:', error);
+    throw error;
+  }
+};
+
+// ==================================================================
+//                        Certifications
+// ==================================================================
+
+export const getAllCertifications = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/certifications`);
+    return await handleResponse(res, 'Failed to fetch certifications');
+  } catch (error) {
+    console.error('getAllCertifications error:', error);
+    throw error;
+  }
+};
+
+export const insertCertification = async (data) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/certifications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    const result = await handleResponse(res, 'Failed to create certification');
+    return result.id;
+  } catch (error) {
+    console.error('insertCertification error:', error);
+    throw error;
+  }
+};
+
+export const updateCertification = async (id, data) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/certifications/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    await handleResponse(res, 'Failed to update certification');
+  } catch (error) {
+    console.error('updateCertification error:', error);
+    throw error;
+  }
+};
+
+export const deleteCertification = async (id) => {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/certifications/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    await handleResponse(res, 'Failed to delete certification');
+  } catch (error) {
+    console.error('deleteCertification error:', error);
+    throw error;
+  }
+};
