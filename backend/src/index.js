@@ -17,7 +17,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173", 
     "http://localhost:3000",
-    "https://portfolio-darshans-projects-70687de6.vercel.app/"
+    "https://portfolio-darshans-projects-70687de6.vercel.app"
   ],
   credentials: true,
 }));
