@@ -28,6 +28,16 @@ const shimmerPulse = keyframes`
   50%       { opacity: 0.8; }
 `;
 
+const fillBar = keyframes`
+  from { width: 0; }
+  to   { width: var(--bar-width); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+`;
+
 // ── Layout ───────────────────────────────────────────────────
 const ExperienceContainer = styled.section`
   width: 100%;
@@ -290,103 +300,219 @@ const SkeletonBlock = styled.div`
   width:  ${({ w }) => w || '100%'};
 `;
 
-// ── Education ─────────────────────────────────────────────────
+// ── Education (Redesigned) ────────────────────────────────────
 const EduGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const EduCard = styled.div`
-  padding: 24px;
-  background: rgba(10,26,46,0.8);
-  border: 1px solid rgba(0,212,255,0.1);
-  border-radius: 14px;
+  position: relative;
+  padding: 22px 22px 22px 28px;
+  background: rgba(10, 26, 46, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
-  gap: 18px;
-  align-items: flex-start;
-  transition: all 0.3s ease;
+  flex-direction: column;
+  gap: 3px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: ${fadeIn} 0.5s ease forwards;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: ${({ $color }) => $color || '#22d3ee'};
+    border-radius: 3px 0 0 3px;
+  }
 
   &:hover {
-    border-color: rgba(34,211,238,0.35);
-    box-shadow: 0 0 20px rgba(34,211,238,0.08);
+    border-color: ${({ $color }) => $color ? `${$color}40` : 'rgba(34,211,238,0.25)'};
+    box-shadow: 0 8px 32px ${({ $color }) => $color ? `${$color}18` : 'rgba(34,211,238,0.1)'};
     transform: translateY(-4px);
+    background: rgba(10, 26, 46, 0.9);
   }
 `;
 
-const EduIcon = styled.div`
-  width: 48px; height: 48px;
+const EduTopRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+`;
+
+const EduIconBox = styled.div`
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
-  background: ${({ color }) => `${color}15`};
-  border: 1px solid ${({ color }) => `${color}30`};
+  background: ${({ $color }) => $color ? `${$color}18` : 'rgba(34,211,238,0.12)'};
+  border: 1px solid ${({ $color }) => $color ? `${$color}30` : 'rgba(34,211,238,0.2)'};
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
 `;
 
-const EduInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+const EduYearBadge = styled.span`
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
 `;
 
 const EduDegree = styled.h4`
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: white;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  margin-bottom: 4px;
 `;
 
 const EduSchool = styled.span`
-  font-size: 0.8rem;
-  color: #22d3ee;
+  font-size: 0.82rem;
   font-weight: 600;
+  color: ${({ $color }) => $color || '#22d3ee'};
+  display: block;
+  margin-bottom: 2px;
 `;
 
-const EduYear = styled.span`
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
+const EduField = styled.span`
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
   font-family: 'Space Mono', monospace;
-  letter-spacing: 0.1em;
+  display: block;
 `;
 
-const EduGrade = styled.span`
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.4);
-  margin-top: 4px;
-`;
-
-// ── Certifications ────────────────────────────────────────────
-const CertGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
-`;
-
-const CertCard = styled.div`
-  padding: 20px;
-  background: rgba(10,26,46,0.7);
-  border: 1px solid ${({ color }) => `${color}22`};
-  border-radius: 12px;
+const GradeRow = styled.div`
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+`;
 
-  &:hover {
-    border-color: ${({ color }) => `${color}55`};
-    box-shadow: 0 0 16px ${({ color }) => `${color}12`};
-    transform: translateY(-3px);
+const GradeLabel = styled.span`
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+`;
+
+const GradeBarWrap = styled.div`
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+`;
+
+const GradeBar = styled.div`
+  height: 100%;
+  border-radius: 99px;
+  background: ${({ $color }) => $color || '#22d3ee'};
+  --bar-width: ${({ $pct }) => $pct || '0%'};
+  width: var(--bar-width);
+  animation: ${fillBar} 1s ease forwards 0.3s;
+  width: 0;
+
+  ${EduCard}:hover & {
+    box-shadow: 0 0 8px ${({ $color }) => $color || '#22d3ee'};
   }
 `;
 
-const CertIcon = styled.div`
-  font-size: 1.6rem;
+const GradeValue = styled.span`
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: ${({ $color }) => $color || '#22d3ee'};
+  min-width: 36px;
+  text-align: right;
+`;
+
+// ── Certifications (Redesigned) ───────────────────────────────
+const CertGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 580px) { grid-template-columns: 1fr; }
+`;
+
+const CertCard = styled.div`
+  padding: 18px;
+  background: rgba(10, 26, 46, 0.7);
+  border: 1px solid ${({ $color }) => $color ? `${$color}20` : 'rgba(255,255,255,0.07)'};
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: ${fadeIn} 0.5s ease forwards;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: ${({ $color }) => $color || '#22d3ee'};
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    border-color: ${({ $color }) => $color ? `${$color}45` : 'rgba(34,211,238,0.3)'};
+    box-shadow: 0 6px 24px ${({ $color }) => $color ? `${$color}14` : 'rgba(34,211,238,0.1)'};
+    transform: translateY(-3px);
+    background: rgba(10, 26, 46, 0.9);
+  }
+
+  &:hover::after { opacity: 1; }
+`;
+
+const CertTopRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+const CertIconWrap = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: ${({ $color }) => $color ? `${$color}18` : 'rgba(34,211,238,0.12)'};
+  border: 1px solid ${({ $color }) => $color ? `${$color}30` : 'rgba(34,211,238,0.2)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+`;
+
+const CertYear = styled.span`
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.08em;
 `;
 
 const CertName = styled.h4`
@@ -397,29 +523,48 @@ const CertName = styled.h4`
 `;
 
 const CertIssuer = styled.span`
-  font-size: 0.72rem;
-  color: ${({ color }) => color};
+  font-size: 0.75rem;
+  color: ${({ $color }) => $color || '#22d3ee'};
   font-family: 'Space Mono', monospace;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  display: block;
 `;
 
-const CertYear = styled.span`
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.3);
-  font-family: 'Space Mono', monospace;
-`;
-
-const CertLink = styled.a`
-  font-size: 0.7rem;
-  color: #22d3ee;
-  font-family: 'Space Mono', monospace;
-  text-decoration: none;
-  margin-top: 4px;
+const VerifiedBadge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  opacity: 0.7;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  margin-top: 4px;
+  align-self: flex-start;
+
+  &::before {
+    content: '✓';
+    font-size: 0.65rem;
+    font-weight: 800;
+  }
+`;
+
+const CertLink = styled.a`
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: #22d3ee;
+  text-decoration: none;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.6;
   transition: opacity 0.2s ease;
+  letter-spacing: 0.04em;
+
   &:hover { opacity: 1; }
 `;
 
@@ -431,6 +576,44 @@ const EmptyState = styled.div`
   p:first-child { font-size: 1rem; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
   p:last-child  { font-size: 0.85rem; }
 `;
+
+// ── Skeleton Cards ────────────────────────────────────────────
+const EduSkeleton = () => (
+  <EduGrid>
+    {[...Array(4)].map((_, i) => (
+      <EduCard key={i} style={{ pointerEvents: 'none' }}>
+        <EduTopRow>
+          <SkeletonBlock h="40px" w="40px" style={{ borderRadius: '10px', flexShrink: 0 }} />
+          <SkeletonBlock h="22px" w="80px" style={{ borderRadius: '20px' }} />
+        </EduTopRow>
+        <SkeletonBlock h="15px" w="80%" style={{ marginBottom: 4 }} />
+        <SkeletonBlock h="12px" w="60%" style={{ marginBottom: 2 }} />
+        <SkeletonBlock h="10px" w="70%" />
+        <GradeRow>
+          <SkeletonBlock h="10px" w="30px" />
+          <SkeletonBlock h="4px" style={{ flex: 1, borderRadius: '99px' }} />
+          <SkeletonBlock h="10px" w="36px" />
+        </GradeRow>
+      </EduCard>
+    ))}
+  </EduGrid>
+);
+
+const CertSkeleton = () => (
+  <CertGrid>
+    {[...Array(6)].map((_, i) => (
+      <CertCard key={i} style={{ pointerEvents: 'none' }}>
+        <CertTopRow>
+          <SkeletonBlock h="36px" w="36px" style={{ borderRadius: '9px' }} />
+          <SkeletonBlock h="10px" w="32px" />
+        </CertTopRow>
+        <SkeletonBlock h="14px" w="85%" style={{ marginBottom: 2 }} />
+        <SkeletonBlock h="11px" w="55%" style={{ marginBottom: 2 }} />
+        <SkeletonBlock h="20px" w="70px" style={{ borderRadius: '20px', marginTop: 4 }} />
+      </CertCard>
+    ))}
+  </CertGrid>
+);
 
 // ── Date Parsing & Sort ───────────────────────────────────────
 const MONTHS = {
@@ -468,44 +651,43 @@ const sortExperiences = (list) => {
   });
 };
 
-// ── Skeleton Cards ────────────────────────────────────────────
-const EduSkeleton = () => (
-  <EduGrid>
-    {[...Array(4)].map((_, i) => (
-      <EduCard key={i} style={{ pointerEvents: 'none' }}>
-        <SkeletonBlock h="48px" w="48px" style={{ borderRadius: '10px', flexShrink: 0 }} />
-        <EduInfo style={{ flex: 1 }}>
-          <SkeletonBlock h="14px" w="80%" />
-          <SkeletonBlock h="12px" w="60%" />
-          <SkeletonBlock h="10px" w="40%" />
-        </EduInfo>
-      </EduCard>
-    ))}
-  </EduGrid>
-);
+// ── Grade → percentage helper ─────────────────────────────────
+const gradeToPercent = (grade) => {
+  if (!grade) return '0%';
+  const s = String(grade).toLowerCase().trim();
 
-const CertSkeleton = () => (
-  <CertGrid>
-    {[...Array(6)].map((_, i) => (
-      <CertCard key={i} color="#22d3ee" style={{ pointerEvents: 'none' }}>
-        <SkeletonBlock h="28px" w="28px" style={{ borderRadius: '4px' }} />
-        <SkeletonBlock h="14px" w="85%" />
-        <SkeletonBlock h="10px" w="55%" />
-        <SkeletonBlock h="10px" w="35%" />
-      </CertCard>
-    ))}
-  </CertGrid>
-);
+  // Percentage: "95%" or "95"
+  const pctMatch = s.match(/^([\d.]+)\s*%$/);
+  if (pctMatch) return `${Math.min(100, parseFloat(pctMatch[1]))}%`;
+
+  // GPA out of 10: "8.8 / 10" or "8.8/10" or just "8.8"
+  const gpa10 = s.match(/^([\d.]+)\s*\/\s*10$/);
+  if (gpa10) return `${Math.min(100, (parseFloat(gpa10[1]) / 10) * 100)}%`;
+
+  // GPA out of 4: "3.8 / 4" or "3.8/4"
+  const gpa4 = s.match(/^([\d.]+)\s*\/\s*4$/);
+  if (gpa4) return `${Math.min(100, (parseFloat(gpa4[1]) / 4) * 100)}%`;
+
+  // Raw number: heuristic — ≤ 10 treat as /10, ≤ 4 treat as /4, > 10 as %
+  const raw = parseFloat(s);
+  if (!isNaN(raw)) {
+    if (raw <= 4)  return `${Math.min(100, (raw / 4)  * 100)}%`;
+    if (raw <= 10) return `${Math.min(100, (raw / 10) * 100)}%`;
+    return `${Math.min(100, raw)}%`;
+  }
+
+  // Lettered grades
+  const letterMap = { 'a+':100,'a':95,'a-':90,'b+':85,'b':80,'b-':75,'c+':70,'c':65 };
+  return `${letterMap[s] ?? 75}%`;
+};
 
 // ── Component ────────────────────────────────────────────────
 const Experience = () => {
   const [activeTab, setActiveTab] = useState('Experience');
 
-  const { data: expList,   loading: expLoading   } = useFirebase('experiences');
-  const { data: eduList,   loading: eduLoading   } = useFirebase('education');
-  const { data: certList,  loading: certLoading  } = useFirebase('certifications');
-
-  
+  const { data: expList,  loading: expLoading  } = useFirebase('experiences');
+  const { data: eduList,  loading: eduLoading  } = useFirebase('education');
+  const { data: certList, loading: certLoading } = useFirebase('certifications');
 
   const tabs = ['Experience', 'Education', 'Certifications'];
 
@@ -589,15 +771,27 @@ const Experience = () => {
           eduList && eduList.length > 0 ? (
             <EduGrid>
               {eduList.map((edu, i) => (
-                <EduCard key={edu.id || i}>
-                  <EduIcon color={edu.color || '#22d3ee'}>{edu.icon || '🎓'}</EduIcon>
-                  <EduInfo>
-                    <EduDegree>{edu.degree}</EduDegree>
-                    <EduSchool>{edu.school}</EduSchool>
-                    {edu.year  && <EduYear>{edu.year}</EduYear>}
-                    {edu.grade && <EduGrade>{edu.grade}</EduGrade>}
-                    {edu.field && <EduGrade style={{ color: 'rgba(255,255,255,0.5)' }}>{edu.field}</EduGrade>}
-                  </EduInfo>
+                <EduCard key={edu.id || i} $color={edu.color}>
+                  <EduTopRow>
+                    <EduIconBox $color={edu.color}>
+                      {edu.icon || '🎓'}
+                    </EduIconBox>
+                    {edu.year && <EduYearBadge>{edu.year}</EduYearBadge>}
+                  </EduTopRow>
+
+                  <EduDegree>{edu.degree}</EduDegree>
+                  <EduSchool $color={edu.color}>{edu.school}</EduSchool>
+                  {edu.field && <EduField>{edu.field}</EduField>}
+
+                  {edu.grade && (
+                    <GradeRow>
+                      <GradeLabel>Score</GradeLabel>
+                      <GradeBarWrap>
+                        <GradeBar $pct={gradeToPercent(edu.grade)} $color={edu.color} />
+                      </GradeBarWrap>
+                      <GradeValue $color={edu.color}>{edu.grade}</GradeValue>
+                    </GradeRow>
+                  )}
                 </EduCard>
               ))}
             </EduGrid>
@@ -615,14 +809,21 @@ const Experience = () => {
           certList && certList.length > 0 ? (
             <CertGrid>
               {certList.map((cert, i) => (
-                <CertCard key={cert.id || i} color={cert.color || '#22d3ee'}>
-                  <CertIcon>{cert.icon || '🏆'}</CertIcon>
+                <CertCard key={cert.id || i} $color={cert.color}>
+                  <CertTopRow>
+                    <CertIconWrap $color={cert.color}>
+                      {cert.icon || '🏆'}
+                    </CertIconWrap>
+                    {cert.year && <CertYear>{cert.year}</CertYear>}
+                  </CertTopRow>
+
                   <CertName>{cert.name}</CertName>
-                  <CertIssuer color={cert.color || '#22d3ee'}>{cert.issuer}</CertIssuer>
-                  {cert.year && <CertYear>{cert.year}</CertYear>}
+                  <CertIssuer $color={cert.color}>{cert.issuer}</CertIssuer>
+                  <VerifiedBadge>Verified</VerifiedBadge>
+
                   {cert.link && (
                     <CertLink href={cert.link} target="_blank" rel="noopener noreferrer">
-                      View Certificate →
+                      View credential →
                     </CertLink>
                   )}
                 </CertCard>
