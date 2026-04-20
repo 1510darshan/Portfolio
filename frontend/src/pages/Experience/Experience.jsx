@@ -797,7 +797,6 @@ const Experience = () => {
           ) : (
             <EmptyState>
               <p>No education data yet.</p>
-              <p>Add entries from the admin panel.</p>
             </EmptyState>
           )
         )}
