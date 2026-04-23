@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { getProfileImage } from "../../Services/Api";
+import { HeroEventTracker } from '../../Services/ManageData';
 
 // ── Animations ──────────────────────────────────────────────
 const float = keyframes`
@@ -394,7 +395,12 @@ const Hero = () => {
     };
 
     fetchProfileImage();
+
   }, []);
+
+  const trackEvent = (section) => {
+    HeroEventTracker(section);
+  };
 
   return (
     <HeroSection id="home">
@@ -435,8 +441,8 @@ const Hero = () => {
           </StatsRow> */}
 
           <ButtonRow>
-            <PrimaryBtn href="#projects">View Projects</PrimaryBtn>
-            <SecondaryBtn href="#contact">Contact Me</SecondaryBtn>
+            <PrimaryBtn href="#projects" onClick={() => trackEvent('projects')}>View Projects</PrimaryBtn>
+            <SecondaryBtn href="#contact" onClick={() => trackEvent('contact')}>Contact Me</SecondaryBtn>
           </ButtonRow>
         </TextAreaContainer>
 

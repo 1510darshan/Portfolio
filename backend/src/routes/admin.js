@@ -261,14 +261,48 @@ router.delete('/certifications/:id', async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════════════════════════════════
-//  REGISTER THE PUBLIC ROUTES in your main app/index.js:
-//
-//  import educationRouter      from './routes/education.js';
-//  import certificationsRouter from './routes/certifications.js';
-//
-//  app.use('/api/education',      educationRouter);
-//  app.use('/api/certifications', certificationsRouter);
-// ════════════════════════════════════════════════════════════════════
+
+
+// ── Analytics (public write, admin read) ──────────────────────
+// Note: POST is public (called from portfolio), GET is protected (admin only)
+// router.get('/analytics', async (req, res) => {
+//   try {
+//     const snapshot = await getDocs(collection(db, 'Analytics'));
+//     const events = [];
+//     snapshot.forEach(d => events.push({ id: d.id, ...d.data() }));
+//     res.json(events);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+
+
+router.get('/analytics',  async (req, res) => {
+  try {
+    const snapshot = await getDocs(collection(db, 'Analytics'));
+    const events = [];
+    snapshot.forEach(doc => {
+      events.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log("Event : ", events);
+    // Sort newest first
+    events.sort((a, b) => {
+      const getMs = (ts) => {
+        if (!ts) return 0;
+        if (ts?.toDate) return ts.toDate().getTime();
+        if (typeof ts === 'object' && ts.seconds) return ts.seconds * 1000;
+        return 0;
+      };
+      return getMs(b.timestamp) - getMs(a.timestamp);
+    });
+    res.json(events);
+  } catch (err) {
+    console.error('Analytics GET error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 export default router;

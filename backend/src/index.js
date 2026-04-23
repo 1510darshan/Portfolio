@@ -10,6 +10,7 @@ import aboutRouter from './routes/about.js';
 import adminRouter from './routes/admin.js';
 import education from './routes/education.js';
 import certifications from './routes/certifications.js';
+import analytics from './routes/analytics.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.use('/api/messages', messagesRouter);
 app.use('/api/about', aboutRouter);
 app.use('/api/education', education);
 app.use('/api/certifications', certifications);
+app.use('/api/analytics', analytics);
 
 // Admin Routes (protected)
 app.use('/api/admin', adminRouter);

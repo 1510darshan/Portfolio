@@ -30,4 +30,8 @@ export {
   insertCertification,
   updateCertification,
   deleteCertification,
+  handleLinkClickAnalytics,
+  handleProjectClickAnalytics,
+  HeroEventTracker,
+  ContactFormAnalytics,
 } from './Api';

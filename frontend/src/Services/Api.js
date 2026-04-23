@@ -1,5 +1,7 @@
 const API_URL = 'https://portfolio-ogjb.vercel.app';
 
+
+
 const getAuthHeader = () => {
   const token = localStorage.getItem('adminToken');
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -26,7 +28,7 @@ const handleResponse = async (response, errorMessage) => {
 export const getAllProjects = async () => {
   try {
     const res = await fetch(`${API_URL}/api/projects`);
-    
+
     return await handleResponse(res, 'Failed to fetch projects');
   } catch (error) {
     console.error('getAllProjects error:', error);
@@ -218,7 +220,7 @@ export const deleteExperience = async (id) => {
 export const getAboutMe = async () => {
   try {
     const res = await fetch(`${API_URL}/api/about`);
-    
+
     return await handleResponse(res, 'Failed to fetch about');
   } catch (error) {
     console.error('getAboutMe error:', error);
@@ -356,7 +358,7 @@ export const getProfileImage = async () => {
   try {
     const about = await getAboutMe();
     const imageUrl = about?.profileImage;
-    
+
     return imageUrl || null;
   } catch (error) {
     console.error('getProfileImage error:', error);
@@ -478,6 +480,83 @@ export const deleteCertification = async (id) => {
     await handleResponse(res, 'Failed to delete certification');
   } catch (error) {
     console.error('deleteCertification error:', error);
+    throw error;
+  }
+};
+
+// =============================================================================
+//                                Analytics
+// =============================================================================
+
+// export const HeroAnalytics = async () => {
+//   try {
+//     fetch(`${API_URL}/api/analytics`, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ section : 'Hero', type: 'visit' }),
+//     }).catch(() => { }); // silent fail — never break the UI
+//   } catch (error) {
+//     console.error('heroAnalytics error:', error);
+//     throw error;
+//   }
+// };
+
+
+
+export const handleLinkClickAnalytics = async (link) => {
+  try {
+    fetch(`${API_URL}/api/analytics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'interaction', NavTab: link.toLowerCase() }),
+    }).catch(() => { });
+  } catch (error) {
+    console.error('handleLinkClickAnalytics error:', error);
+    throw error;
+  }
+};
+
+
+
+export const handleProjectClickAnalytics = async (link) => {
+  try {
+
+    console.log(link, 'is clicked');
+    fetch(`${API_URL}/api/analytics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'interaction', Project: link.toLowerCase() }),
+    }).catch(() => { });
+  } catch (error) {
+    console.error('handleProjectClickAnalytics error:', error);
+    throw error;
+  }
+};
+
+
+export const HeroEventTracker = async (section) => {
+  try {
+    fetch(`${API_URL}/api/analytics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({module: 'Hero', type: 'interaction', section : section }),
+    }).catch(() => { });
+  } catch (error) {
+    console.error('HeroEventTrackerAnalytics error:', error);
+    throw error;
+  }
+};
+
+
+export const ContactFormAnalytics = async () => {
+  try {
+    fetch(`${API_URL}/api/analytics`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'interaction', section: 'contact-form' }),
+    }).catch(() => { });
+  } catch (error) {
+    console.error('ContactFormAnalytics error:', error);
     throw error;
   }
 };

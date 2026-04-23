@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { getAllProjects } from '../../Services/Api';
+import { getAllProjects, handleProjectClickAnalytics } from '../../Services/Api';
 
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
@@ -713,7 +713,7 @@ const Projects = () => {
         const p = expandedProject;
         const accent = p.accent || '#22d3ee';
         return (
-          <Overlay onClick={() => setExpanded(null)}>
+          <Overlay onClick={handleProjectClickAnalytics(p.name),() => setExpanded(null)}>
             <Modal $accent={accent} onClick={e => e.stopPropagation()}>
               <CloseBtn onClick={() => setExpanded(null)}>✕</CloseBtn>
 
