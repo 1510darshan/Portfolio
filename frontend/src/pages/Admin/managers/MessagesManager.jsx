@@ -38,7 +38,6 @@ const StatsStrip = styled.div`
   gap: 8px;
 `;
 
-/* FIX: $c is a transient prop — won't be forwarded to the DOM */
 const StatBox = styled.div`
   padding: 10px;
   background: rgba(255,255,255,0.03);
@@ -76,7 +75,6 @@ const MsgList = styled.div`
   max-height: 520px;
 `;
 
-/* FIX: $sel and $d are transient props */
 const MsgItem = styled.button`
   display: flex;
   flex-direction: column;
@@ -98,7 +96,6 @@ const MsgItem = styled.button`
   }
 `;
 
-/* FIX: $show is a transient prop */
 const UnreadBar = styled.div`
   position: absolute;
   left: 0; top: 50%;
@@ -239,15 +236,13 @@ const MessagesManager = ({ onDataUpdate, onUnreadChange }) => {
     try {
       setLoading(true);
       const all = await getAllMessages();
-      const sorted = (all || []).sort((a, b) => toMs(b.timestamp) - toMs(a.timestamp));
+      const sorted = (all || []).sort((a,b) => toMs(b.timestamp) - toMs(a.timestamp));
       setMessages(sorted);
       if (sorted.length > 0 && !selId) setSelId(sorted[0].id);
-      onUnreadChange?.(sorted.filter(m => !m.read).length);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+      const unread = sorted.filter(m => !m.read).length;
+      onUnreadChange?.(unread);
+    } catch(e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   const handleMarkRead = async () => {
@@ -255,14 +250,10 @@ const MessagesManager = ({ onDataUpdate, onUnreadChange }) => {
     setActLoading(true);
     try {
       await markMessageAsRead(selId);
-      setMessages(ms => ms.map(m => m.id === selId ? { ...m, read: true } : m));
+      setMessages(ms => ms.map(m => m.id === selId ? {...m, read: true} : m));
       onUnreadChange?.(messages.filter(m => !m.read && m.id !== selId).length);
-    } catch (e) {
-      console.error(e);
-      alert(e.message);
-    } finally {
-      setActLoading(false);
-    }
+    } catch(e) { console.error(e); alert(e.message); }
+    finally { setActLoading(false); }
   };
 
   const handleDelete = async () => {
@@ -275,24 +266,20 @@ const MessagesManager = ({ onDataUpdate, onUnreadChange }) => {
       setSelId(next[0]?.id || null);
       onUnreadChange?.(next.filter(m => !m.read).length);
       onDataUpdate?.();
-    } catch (e) {
-      console.error(e);
-      alert(e.message);
-    } finally {
-      setActLoading(false);
-    }
+    } catch(e) { console.error(e); alert(e.message); }
+    finally { setActLoading(false); }
   };
 
-  const sel    = messages.find(m => m.id === selId);
-  const unread = messages.filter(m => !m.read).length;
+  const sel     = messages.find(m => m.id === selId);
+  const unread  = messages.filter(m => !m.read).length;
 
   if (loading) return (
     <Grid>
       <ListPanel>
-        {[...Array(5)].map((_, i) => (
-          <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
-            <div style={{ height: 11, background: 'rgba(255,255,255,0.06)', borderRadius: 4, width: '50%' }} />
-            <div style={{ height: 9,  background: 'rgba(255,255,255,0.04)', borderRadius: 4, width: '80%' }} />
+        {[...Array(5)].map((_,i) => (
+          <div key={i} style={{display:'flex',flexDirection:'column',gap:6,padding:'12px',background:'rgba(255,255,255,0.02)',borderRadius:10}}>
+            <div style={{height:11,background:'rgba(255,255,255,0.06)',borderRadius:4,width:'50%'}} />
+            <div style={{height:9, background:'rgba(255,255,255,0.04)',borderRadius:4,width:'80%'}} />
           </div>
         ))}
       </ListPanel>
@@ -307,13 +294,13 @@ const MessagesManager = ({ onDataUpdate, onUnreadChange }) => {
         <SectionTitle sm>Inbox</SectionTitle>
         <StatsStrip>
           <StatBox><div className="val">{messages.length}</div><div className="lbl">Total</div></StatBox>
-          <StatBox $c="#00d4ff"><div className="val" style={{ color: '#00d4ff' }}>{unread}</div><div className="lbl">Unread</div></StatBox>
-          <StatBox $c="#10d9a8"><div className="val" style={{ color: '#10d9a8' }}>{messages.length - unread}</div><div className="lbl">Read</div></StatBox>
+          <StatBox $c="#00d4ff"><div className="val" style={{color:'#00d4ff'}}>{unread}</div><div className="lbl">Unread</div></StatBox>
+          <StatBox $c="#10d9a8"><div className="val" style={{color:'#10d9a8'}}>{messages.length-unread}</div><div className="lbl">Read</div></StatBox>
         </StatsStrip>
         <Divider />
         <MsgList>
           {messages.map((m, i) => (
-            <MsgItem key={m.id} $sel={selId === m.id} $d={`${i * 0.03}s`} onClick={() => setSelId(m.id)}>
+            <MsgItem key={m.id} $sel={selId===m.id} $d={`${i*0.03}s`} onClick={() => setSelId(m.id)}>
               <UnreadBar $show={!m.read} />
               <ItemName>
                 {m.name || 'Unknown'}
@@ -344,7 +331,7 @@ const MessagesManager = ({ onDataUpdate, onUnreadChange }) => {
                 </MetaItem>
                 <MetaItem>
                   <div className="label">Received</div>
-                  <div className="value" style={{ fontSize: '0.78rem' }}>{formatDate(sel.timestamp)}</div>
+                  <div className="value" style={{fontSize:'0.78rem'}}>{formatDate(sel.timestamp)}</div>
                 </MetaItem>
                 <MetaItem>
                   <div className="label">Status</div>
