@@ -44,6 +44,7 @@ const ItemsList = styled.div`
   &::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.25); border-radius: 3px; }
 `;
 
+/* FIX: $selected is a transient prop */
 const ListItem = styled.div`
   padding: 14px 16px;
   background: ${({ $selected }) => $selected ? 'rgba(34,211,238,0.08)' : 'rgba(10,26,46,0.6)'};
@@ -57,11 +58,13 @@ const ListItem = styled.div`
   &:hover { border-color: rgba(34,211,238,0.3); background: rgba(10,26,46,0.8); }
 `;
 
+/* FIX: color is a standard HTML attribute but on a div it's fine;
+   however to be safe and suppress warnings we use $color */
 const IconBox = styled.div`
   width: 36px; height: 36px;
   border-radius: 8px;
-  background: ${({ color }) => `${color}18`};
-  border: 1px solid ${({ color }) => `${color}30`};
+  background: ${({ $color }) => `${$color}18`};
+  border: 1px solid ${({ $color }) => `${$color}30`};
   display: flex; align-items: center; justify-content: center;
   font-size: 1.1rem;
   flex-shrink: 0;
@@ -180,17 +183,24 @@ const EducationManager = ({ onDataUpdate }) => {
   useEffect(() => { load(); }, []);
 
   const load = async () => {
-    try { setItems((await getAllEducation()) || []); }
-    catch (e) { console.error(e); }
+    try {
+      setItems((await getAllEducation()) || []);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const pick = (item) => {
     setSelected(item);
     setForm({
-      degree: item.degree || '', school: item.school || '',
-      field:  item.field  || '', year:   item.year   || '',
-      grade:  item.grade  || '', icon:   item.icon   || '🎓',
-      color:  item.color  || '#22d3ee', order: item.order ?? 0,
+      degree: item.degree || '',
+      school: item.school || '',
+      field:  item.field  || '',
+      year:   item.year   || '',
+      grade:  item.grade  || '',
+      icon:   item.icon   || '🎓',
+      color:  item.color  || '#22d3ee',
+      order:  item.order  ?? 0,
     });
   };
 
@@ -201,14 +211,26 @@ const EducationManager = ({ onDataUpdate }) => {
     try {
       if (selected) await updateEducation(selected.id, form);
       else          await insertEducation(form);
-      load(); reset(); onDataUpdate?.();
-    } catch (e) { console.error(e); }
+      load();
+      reset();
+      onDataUpdate?.();
+    } catch (e) {
+      console.error(e);
+      alert(e.message);
+    }
   };
 
   const del = async (id) => {
     if (!window.confirm('Delete this education entry?')) return;
-    try { await deleteEducation(id); load(); reset(); onDataUpdate?.(); }
-    catch (e) { console.error(e); }
+    try {
+      await deleteEducation(id);
+      load();
+      reset();
+      onDataUpdate?.();
+    } catch (e) {
+      console.error(e);
+      alert(e.message);
+    }
   };
 
   const reset = () => {
@@ -230,7 +252,8 @@ const EducationManager = ({ onDataUpdate }) => {
               ? <Empty>// no education entries yet</Empty>
               : items.map(item => (
                   <ListItem key={item.id} $selected={selected?.id === item.id} onClick={() => pick(item)}>
-                    <IconBox color={item.color || '#22d3ee'}>{item.icon || '🎓'}</IconBox>
+                    {/* FIX: pass $color not color to avoid HTML attribute clash */}
+                    <IconBox $color={item.color || '#22d3ee'}>{item.icon || '🎓'}</IconBox>
                     <ItemBody>
                       <div className="name">{item.degree}</div>
                       <div className="meta">{item.school}{item.year ? ` · ${item.year}` : ''}</div>
@@ -245,60 +268,82 @@ const EducationManager = ({ onDataUpdate }) => {
         {/* Form */}
         <Col>
           <SectionTitle>{selected ? 'Edit Education' : 'New Education'}</SectionTitle>
+          {/* FIX: use a real <form> element, not FormCard as="form", for proper submit handling */}
           <FormCard as="form" onSubmit={submit}>
 
             <FormGroup>
               <Label>Degree / Qualification *</Label>
-              <Input required value={form.degree}
+              <Input
+                required
+                value={form.degree}
                 onChange={e => set('degree', e.target.value)}
-                placeholder="e.g., B.E. Computer Engineering" />
+                placeholder="e.g., B.E. Computer Engineering"
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>School / University *</Label>
-              <Input required value={form.school}
+              <Input
+                required
+                value={form.school}
                 onChange={e => set('school', e.target.value)}
-                placeholder="e.g., Mumbai University" />
+                placeholder="e.g., Mumbai University"
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Field of Study</Label>
-              <Input value={form.field}
+              <Input
+                value={form.field}
                 onChange={e => set('field', e.target.value)}
-                placeholder="e.g., Computer Science" />
+                placeholder="e.g., Computer Science"
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Year / Duration</Label>
-              <Input value={form.year}
+              <Input
+                value={form.year}
                 onChange={e => set('year', e.target.value)}
-                placeholder="e.g., 2020 — 2024" />
+                placeholder="e.g., 2020 — 2024"
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Grade / CGPA</Label>
-              <Input value={form.grade}
+              <Input
+                value={form.grade}
                 onChange={e => set('grade', e.target.value)}
-                placeholder="e.g., 8.5 CGPA / First Class" />
+                placeholder="e.g., 8.5 CGPA / First Class"
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Icon / Emoji</Label>
-              <Input value={form.icon}
+              <Input
+                value={form.icon}
                 onChange={e => set('icon', e.target.value)}
-                placeholder="🎓" maxLength={2} />
+                placeholder="🎓"
+                maxLength={2}
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Accent Color</Label>
-              <Input type="color" value={form.color}
-                onChange={e => set('color', e.target.value)} />
+              <Input
+                type="color"
+                value={form.color}
+                onChange={e => set('color', e.target.value)}
+              />
             </FormGroup>
 
             <FormGroup>
               <Label>Display Order</Label>
-              <Input type="number" value={form.order}
-                onChange={e => set('order', parseInt(e.target.value) || 0)} />
+              <Input
+                type="number"
+                value={form.order}
+                onChange={e => set('order', parseInt(e.target.value) || 0)}
+              />
             </FormGroup>
 
             <BtnRow>

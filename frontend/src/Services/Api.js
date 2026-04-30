@@ -1,23 +1,25 @@
 const API_URL = 'https://portfolio-ogjb.vercel.app';
 
-
-
 const getAuthHeader = () => {
   const token = localStorage.getItem('adminToken');
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 /**
- * Centralized error handling for all API calls
+ * Centralized error handling for all API calls.
+ * Now logs the HTTP status so you can diagnose 401 vs 404 vs 500 instantly.
  */
 const handleResponse = async (response, errorMessage) => {
   if (!response.ok) {
+    let serverMsg = errorMessage;
     try {
       const error = await response.json();
-      throw new Error(error.error || errorMessage);
-    } catch (e) {
-      throw new Error(errorMessage);
+      serverMsg = error.error || errorMessage;
+    } catch (_) {
+      // response was not JSON (HTML error page, network proxy error, etc.)
     }
+    console.error(`API [${response.status}] ${response.url} →`, serverMsg);
+    throw new Error(serverMsg);
   }
   return response.json();
 };
@@ -28,7 +30,6 @@ const handleResponse = async (response, errorMessage) => {
 export const getAllProjects = async () => {
   try {
     const res = await fetch(`${API_URL}/api/projects`);
-
     return await handleResponse(res, 'Failed to fetch projects');
   } catch (error) {
     console.error('getAllProjects error:', error);
@@ -63,14 +64,11 @@ export const insertProject = async (projectData) => {
 
 export const updateProject = async (id, projectData) => {
   try {
-    const url = `${API_URL}/api/admin/projects/${id}`;
-
-    const res = await fetch(url, {
+    const res = await fetch(`${API_URL}/api/admin/projects/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(projectData),
     });
-
     await handleResponse(res, 'Failed to update project');
   } catch (error) {
     console.error('updateProject error:', error);
@@ -94,7 +92,6 @@ export const deleteProject = async (id) => {
 // ==================================================================
 //                        Skills
 // ==================================================================
-
 export const getAllSkills = async () => {
   try {
     const res = await fetch(`${API_URL}/api/skills`);
@@ -160,7 +157,6 @@ export const deleteSkill = async (id) => {
 // ==================================================================
 //                        Experiences
 // ==================================================================
-
 export const getAllExperiences = async () => {
   try {
     const res = await fetch(`${API_URL}/api/experiences`);
@@ -216,11 +212,9 @@ export const deleteExperience = async (id) => {
 // ==================================================================
 //                        About
 // ==================================================================
-
 export const getAboutMe = async () => {
   try {
     const res = await fetch(`${API_URL}/api/about`);
-
     return await handleResponse(res, 'Failed to fetch about');
   } catch (error) {
     console.error('getAboutMe error:', error);
@@ -245,7 +239,6 @@ export const updateAboutMe = async (data) => {
 // ==================================================================
 //                        Messages
 // ==================================================================
-
 export const sendMessage = async (messageData) => {
   try {
     const res = await fetch(`${API_URL}/api/messages`, {
@@ -302,11 +295,10 @@ export const deleteMessage = async (id) => {
 // ==================================================================
 //                        Image URL Validation
 // ==================================================================
-
 export const uploadProjectImage = (imageUrl) => {
   try {
     if (!imageUrl) throw new Error('Image URL is required');
-    new URL(imageUrl); // Validates URL format
+    new URL(imageUrl);
     return imageUrl;
   } catch (error) {
     console.error('uploadProjectImage error:', error);
@@ -317,7 +309,7 @@ export const uploadProjectImage = (imageUrl) => {
 export const uploadProfileImage = (imageUrl) => {
   try {
     if (!imageUrl) throw new Error('Image URL is required');
-    new URL(imageUrl); // Validates URL format
+    new URL(imageUrl);
     return imageUrl;
   } catch (error) {
     console.error('uploadProfileImage error:', error);
@@ -328,7 +320,6 @@ export const uploadProfileImage = (imageUrl) => {
 // ==================================================================
 //                        Admin Authentication
 // ==================================================================
-
 export const adminLogin = async (email, password) => {
   try {
     const res = await fetch(`${API_URL}/api/admin/login`, {
@@ -353,29 +344,19 @@ export const isAdminAuthenticated = () => {
   return !!localStorage.getItem('adminToken');
 };
 
-// ── Utility (not an API call - placeholder for profile image) ──────
 export const getProfileImage = async () => {
   try {
     const about = await getAboutMe();
-    const imageUrl = about?.profileImage;
-
-    return imageUrl || null;
+    return about?.profileImage || null;
   } catch (error) {
     console.error('getProfileImage error:', error);
     return null;
   }
 };
 
-
-// ════════════════════════════════════════════════════════════════════
-//  PASTE THESE INTO YOUR EXISTING ManageData.js / Api.js
-//  (keep the same API_URL and getAuthHeader / handleResponse already there)
-// ════════════════════════════════════════════════════════════════════
-
 // ==================================================================
 //                        Education
 // ==================================================================
-
 export const getAllEducation = async () => {
   try {
     const res = await fetch(`${API_URL}/api/education`);
@@ -431,7 +412,6 @@ export const deleteEducation = async (id) => {
 // ==================================================================
 //                        Certifications
 // ==================================================================
-
 export const getAllCertifications = async () => {
   try {
     const res = await fetch(`${API_URL}/api/certifications`);
@@ -484,69 +464,44 @@ export const deleteCertification = async (id) => {
   }
 };
 
-// =============================================================================
-//                                Analytics
-// =============================================================================
-
-// export const HeroAnalytics = async () => {
-//   try {
-//     fetch(`${API_URL}/api/analytics`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ section : 'Hero', type: 'visit' }),
-//     }).catch(() => { }); // silent fail — never break the UI
-//   } catch (error) {
-//     console.error('heroAnalytics error:', error);
-//     throw error;
-//   }
-// };
-
-
-
+// ==================================================================
+//                        Analytics
+// ==================================================================
 export const handleLinkClickAnalytics = async (link) => {
   try {
     fetch(`${API_URL}/api/analytics`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', NavTab: link.toLowerCase() }),
-    }).catch(() => { });
+    }).catch(() => {});
   } catch (error) {
     console.error('handleLinkClickAnalytics error:', error);
-    throw error;
   }
 };
 
-
-
 export const handleProjectClickAnalytics = async (link) => {
   try {
-
-    console.log(link, 'is clicked');
     fetch(`${API_URL}/api/analytics`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', Project: link.toLowerCase() }),
-    }).catch(() => { });
+    }).catch(() => {});
   } catch (error) {
     console.error('handleProjectClickAnalytics error:', error);
-    throw error;
   }
 };
-
 
 export const HeroEventTracker = async (section) => {
   try {
     fetch(`${API_URL}/api/analytics`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({module: 'Hero', type: 'interaction', section : section }),
-    }).catch(() => { });
+      body: JSON.stringify({ module: 'Hero', type: 'interaction', section }),
+    }).catch(() => {});
   } catch (error) {
     console.error('HeroEventTrackerAnalytics error:', error);
-    throw error;
   }
 };
-
 
 export const ContactFormAnalytics = async () => {
   try {
@@ -554,9 +509,8 @@ export const ContactFormAnalytics = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', section: 'contact-form' }),
-    }).catch(() => { });
+    }).catch(() => {});
   } catch (error) {
     console.error('ContactFormAnalytics error:', error);
-    throw error;
   }
 };

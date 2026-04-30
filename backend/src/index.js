@@ -23,8 +23,13 @@ app.use(cors({
     "https://portfolio-darshans-projects-70687de6.vercel.app"
   ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 app.use(express.json());
+
+
 
 // Public Routes
 app.use('/api/projects', projectsRouter);
