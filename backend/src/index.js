@@ -20,7 +20,9 @@ app.use(cors({
   origin: [
     "http://localhost:5173", 
     "http://localhost:3000",
-    "https://portfolio-darshans-projects-70687de6.vercel.app"
+    "https://portfolio-darshans-projects-70687de6.vercel.app",
+    "portfolio-git-main-darshans-projects-70687de6.vercel.app",
+    "portfolio-g41kv4koi-darshans-projects-70687de6.vercel.app",
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
