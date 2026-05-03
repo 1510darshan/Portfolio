@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import { resolveIcon as resolveIconAsync, findIcon } from '../../Services/IconLoader';
 import { useFirebase } from '../../Services/FetchData';
-
-// Register all icons once at module level
-library.add(fab, fas);
-
-// ── Helper: safely resolve { prefix, name } → FA icon def ────
-const resolveIcon = (iconDef) => {
-  if (!iconDef?.prefix || !iconDef?.name) return null;
-  try {
-    return findIconDefinition({ prefix: iconDef.prefix, iconName: iconDef.name }) ?? null;
-  } catch {
-    return null;
-  }
-};
 
 // ── Animations ──────────────────────────────────────────────
 const fadeInUp = keyframes`
@@ -296,7 +281,7 @@ const SkillRing = ({ name, level, color, icon }) => {
   const r      = 38;
   const circ   = 2 * Math.PI * r;
   const offset = circ - (level / 100) * circ;
-  const faIcon = resolveIcon(icon);
+  const faIcon = findIcon(icon);
 
   return (
     <RingWrap color={color}>
@@ -349,6 +334,15 @@ const TOOLS = [
 const Skills = () => {
   const { data: allSkills, loading, error } = useFirebase('skills');
   const [activeTab, setActiveTab] = useState(null);
+  const [iconsReady, setIconsReady] = useState(false);
+
+  // Preload all icons used by skills once data arrives
+  useEffect(() => {
+    if (!allSkills || allSkills.length === 0) return;
+    setIconsReady(false);
+    const iconDefs = allSkills.map(s => s.icon).filter(Boolean);
+    Promise.all(iconDefs.map(resolveIconAsync)).then(() => setIconsReady(true));
+  }, [allSkills]);
 
   const categories = React.useMemo(() => {
     if (!allSkills || allSkills.length === 0) return {};
@@ -443,7 +437,7 @@ const Skills = () => {
           {!loading && !error && activeSkills.length > 0 && (
             <SkillsGrid>
               {activeSkills.map(skill => {
-                const faIcon = resolveIcon(skill.icon);
+                const faIcon = findIcon(skill.icon);
                 const color  = skill.color || '#22d3ee';
                 return (
                   <SkillCard key={skill.id || skill.name} color={color}>

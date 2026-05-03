@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library, findIconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import { resolveIcon as resolveIconAsync, findIcon } from '../../../Services/IconLoader';
 import { getAllSkills, updateSkill, insertSkill, deleteSkill } from '../../../Services/ManageData';
 import {
   Card, TwoCol, Col, SectionTitle, SectionHead,
   FormCol, FormGroup, Label, Input,
   Btn, BtnRow, ListItem, ItemsList, Badge, Empty,
 } from './Adminshared';
-
-library.add(fab, fas);
 
 const fadeUp = keyframes`
   from { opacity:0; transform:translateY(12px); }
@@ -175,14 +171,24 @@ const resolveIcon = (def) => {
 const IconPicker = ({ value, onChange, color }) => {
   const [tab,    setTab]    = useState('brands');
   const [search, setSearch] = useState('');
+  const [ready,  setReady]  = useState(false);
 
   const src    = tab === 'brands' ? BRAND_ICONS : SOLID_ICONS;
   const prefix = tab === 'brands' ? 'fab' : 'fas';
   const list   = src.filter(n => n.includes(search.toLowerCase()));
-  const prev   = resolveIcon(value);
+  const prev   = findIcon(value);
   const c      = color || '#00d4ff';
   const bg     = `${c}14`;
   const border = `${c}28`;
+
+  // Preload all picker icons on mount
+  useEffect(() => {
+    const all = [
+      ...BRAND_ICONS.map(name => ({ prefix: 'fab', name })),
+      ...SOLID_ICONS.map(name => ({ prefix: 'fas', name })),
+    ];
+    Promise.all(all.map(resolveIconAsync)).then(() => setReady(true));
+  }, []);
 
   return (
     <PickerWrap>
@@ -204,9 +210,11 @@ const IconPicker = ({ value, onChange, color }) => {
       <SearchInp placeholder="Search icons…" value={search} onChange={e => setSearch(e.target.value)} />
 
       <IconGrid>
-        {list.length > 0
+        {!ready
+          ? <NoIcons>Loading icons…</NoIcons>
+          : list.length > 0
           ? list.map(name => {
-              const icon = findIconDefinition({prefix, iconName: name});
+              const icon = findIcon({prefix, name});
               if (!icon) return null;
               const isSel = value?.prefix === prefix && value?.name === name;
               return (
@@ -234,7 +242,12 @@ const SkillsManager = ({ onDataUpdate }) => {
   useEffect(() => { load(); }, []);
 
   const load = async () => {
-    try { setSkills((await getAllSkills()) || []); }
+    try {
+      const data = (await getAllSkills()) || [];
+      setSkills(data);
+      // Preload icons for all existing skills
+      Promise.all(data.map(s => s.icon ? resolveIconAsync(s.icon) : null));
+    }
     catch(e) { console.error(e); }
   };
 
@@ -276,7 +289,7 @@ const SkillsManager = ({ onDataUpdate }) => {
           </SectionHead>
           <ItemsList>
             {skills.map(s => {
-              const icon = resolveIcon(s.icon);
+              const icon = findIcon(s.icon);
               const c = s.color || '#00d4ff';
               return (
                 <ListItem key={s.id} selected={selected?.id === s.id} onClick={() => pick(s)}>

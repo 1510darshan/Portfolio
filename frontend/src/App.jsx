@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './pages/Hero/Hero';
 import About from './pages/About/About';
@@ -8,8 +8,10 @@ import Projects from './pages/Projects/Projects';
 import Skills from './pages/Skills/Skills';
 import Experience from './pages/Experience/Experience';
 import Contact from './pages/Contact/Contact';
-import Admin from './pages/Admin/Admin';
-import AdminLogin from './pages/Admin/AdminLogin';
+
+// Lazy-load Admin pages — they're heavy and only visited occasionally
+const Admin = lazy(() => import('./pages/Admin/Admin'));
+const AdminLogin = lazy(() => import('./pages/Admin/AdminLogin'));
 
 function Portfolio() {
   return (
@@ -53,11 +55,13 @@ function App() {
         <Route
           path="/admin"
           element={
-            isAdminAuthenticated ? (
-              <Admin onLogout={handleAdminLogout} />
-            ) : (
-              <AdminLogin onLogin={handleAdminLogin} />
-            )
+            <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>}>
+              {isAdminAuthenticated ? (
+                <Admin onLogout={handleAdminLogout} />
+              ) : (
+                <AdminLogin onLogin={handleAdminLogin} />
+              )}
+            </Suspense>
           }
         />
       </Routes>
