@@ -82,12 +82,25 @@ const Logo = styled.div`
 `;
 
 const LogoMark = styled.div`
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #00d4ff, #8b5cf6);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem; font-weight: 800; color: white; flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
 `;
+
+
 
 const LogoText = styled.div`
   .name { font-size: 0.9rem; font-weight: 800; color: white; line-height: 1.1; letter-spacing: -0.02em; }
@@ -305,7 +318,7 @@ const Admin = ({ onLogout }) => {
         {/* ── Sidebar ── */}
         <Sidebar>
           <Logo>
-            <LogoMark>A</LogoMark>
+            <LogoMark><img src="./icon.png" alt="" srcset="" /></LogoMark>
             <LogoText>
               <div className="name">Portfolio</div>
               <div className="sub">Admin Panel</div>
@@ -335,7 +348,7 @@ const Admin = ({ onLogout }) => {
 
           <SidebarBottom>
             <UserChip>
-              <Avatar>A</Avatar>
+              <LogoMark><img src="./icon.png" alt="" srcset="" /></LogoMark>
               <UserInfo>
                 <div className="name">Admin</div>
                 <div className="role">super user</div>

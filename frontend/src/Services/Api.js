@@ -15,9 +15,15 @@ const handleResponse = async (response, errorMessage) => {
     try {
       const error = await response.json();
       serverMsg = error.error || errorMessage;
-    } catch (_) {
-      // response was not JSON (HTML error page, network proxy error, etc.)
+    } catch (_) { }
+
+    // Auto-clear expired/invalid token and redirect to login
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminAuth');
+      window.location.href = '/admin'; // adjust to your login route
     }
+
     console.error(`API [${response.status}] ${response.url} →`, serverMsg);
     throw new Error(serverMsg);
   }
@@ -473,7 +479,7 @@ export const handleLinkClickAnalytics = async (link) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', NavTab: link.toLowerCase() }),
-    }).catch(() => {});
+    }).catch(() => { });
   } catch (error) {
     console.error('handleLinkClickAnalytics error:', error);
   }
@@ -485,7 +491,7 @@ export const handleProjectClickAnalytics = async (link) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', Project: link.toLowerCase() }),
-    }).catch(() => {});
+    }).catch(() => { });
   } catch (error) {
     console.error('handleProjectClickAnalytics error:', error);
   }
@@ -497,7 +503,7 @@ export const HeroEventTracker = async (section) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ module: 'Hero', type: 'interaction', section }),
-    }).catch(() => {});
+    }).catch(() => { });
   } catch (error) {
     console.error('HeroEventTrackerAnalytics error:', error);
   }
@@ -509,7 +515,7 @@ export const ContactFormAnalytics = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'interaction', section: 'contact-form' }),
-    }).catch(() => {});
+    }).catch(() => { });
   } catch (error) {
     console.error('ContactFormAnalytics error:', error);
   }

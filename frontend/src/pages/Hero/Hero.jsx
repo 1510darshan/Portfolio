@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from "styled-components";
 import { getProfileImage } from "../../Services/Api";
 import { HeroEventTracker } from '../../Services/ManageData';
